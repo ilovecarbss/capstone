@@ -1,0 +1,21 @@
+template,count
+Jul  1 07:57:30 combo ftpd[<NUM>]: connection from <IP> () at Fri Jul  1 07:57:30 <NUM>,23
+Jul 22 09:27:24 combo ftpd[<NUM>]: connection from <IP> () at Fri Jul 22 09:27:24 <NUM>,23
+Jul 10 03:55:15 combo ftpd[<NUM>]: connection from <IP> () at Sun Jul 10 03:55:15 <NUM>,23
+Jul 25 06:39:18 combo ftpd[<NUM>]: connection from <IP> () at Mon Jul 25 06:39:18 <NUM>,23
+Jul  9 11:35:59 combo ftpd[<NUM>]: connection from <IP> () at Sat Jul  9 11:35:59 <NUM>,23
+Jul  4 12:52:44 combo ftpd[<NUM>]: connection from <IP> (adsl-63-<NUM>-98-<NUM>.dsl.mtry01.pacbell.net) at Mon Jul  4 12:52:44 <NUM>,23
+Jul 10 13:17:22 combo ftpd[<NUM>]: connection from <IP> () at Sun Jul 10 13:17:22 <NUM>,23
+Jul  3 10:05:25 combo ftpd[<NUM>]: connection from <IP> (dsl-Chn-static-<IP>.touchtelindia.net) at Sun Jul  3 10:05:25 <NUM>,23
+Jul  3 23:16:09 combo ftpd[<NUM>]: connection from <IP> (<IP>.sh.interxion.inode.at) at Sun Jul  3 23:16:09 <NUM>,23
+Jul 24 02:38:22 combo ftpd[<NUM>]: connection from <IP> () at Sun Jul 24 02:38:22 <NUM>,23
+Jun 29 03:22:22 combo ftpd[<NUM>]: connection from <IP> () at Wed Jun 29 03:22:22 <NUM>,22
+Jul 17 23:21:54 combo ftpd[<NUM>]: connection from <IP> (82-68-<NUM>-<NUM>.dsl.in-addr.zen.co.uk) at Sun Jul 17 23:21:54 <NUM>,22
+Jul 21 09:04:41 combo ftpd[<NUM>]: connection from <IP> () at Thu Jul 21 09:04:41 <NUM>,22
+Jul 17 08:06:12 combo ftpd[<NUM>]: connection from <IP> () at Sun Jul 17 08:06:12 <NUM>,22
+Jul 22 19:29:09 combo ftpd[<NUM>]: connection from <IP> () at Fri Jul 22 19:29:09 <NUM>,22
+Jul  6 18:00:56 combo ftpd[<NUM>]: connection from <IP> () at Wed Jul  6 18:00:56 <NUM>,21
+Jul 15 23:42:43 combo ftpd[<NUM>]: connection from <IP> () at Fri Jul 15 23:42:43 <NUM>,21
+Jul 16 08:14:07 combo ftpd[<NUM>]: connection from <IP> () at Sat Jul 16 08:14:07 <NUM>,20
+Jul 25 23:24:09 combo ftpd[<NUM>]: connection from <IP> () at Mon Jul 25 23:24:09 <NUM>,19
+Jun 25 09:20:24 combo ftpd[<NUM>]: connection from <IP> () at Sat Jun 25 09:20:24 <NUM>,18

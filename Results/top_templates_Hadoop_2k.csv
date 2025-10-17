@@ -1,0 +1,21 @@
+template,count
+"<NUM>-10-18 18:01:53,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_<NUM>_<NUM>_m_<NUM>_0 TaskAttempt Transitioned from NEW to UNASSIGNED",10
+"<NUM>-10-18 18:01:53,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_<NUM>_<NUM>_m_<NUM> Task Transitioned from NEW to SCHEDULED",10
+"<NUM>-10-18 18:01:53,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.yarn.util.RackResolver: Resolved MSRA-SA-41.fareast.corp.microsoft.com to <PATH>",10
+"<NUM>-10-18 18:01:53,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.yarn.util.RackResolver: Resolved MSRA-SA-39.fareast.corp.microsoft.com to <PATH>",10
+"<NUM>-10-18 18:04:47,<NUM> INFO [IPC Server handler 21 on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Progress of TaskAttempt attempt_<NUM>_<NUM>_m_<NUM>_0 is : 0.<HEX>",3
+"<NUM>-10-18 18:01:50,<NUM> INFO [main] org.apache.hadoop.mapreduce.v2.jobhistory.JobHistoryUtils: Default file system [hdfs:<PATH>:<NUM>]",3
+"<NUM>-10-18 18:03:57,<NUM> INFO [Socket Reader #1 for port <NUM>] SecurityLogger.org.apache.hadoop.ipc.Server: Auth successful for job_<NUM>_<NUM> (auth:SIMPLE)",2
+"<NUM>-10-18 18:03:03,<NUM> INFO [IPC Server handler 27 on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Progress of TaskAttempt attempt_<NUM>_<NUM>_m_<NUM>_0 is : 0.<HEX>",2
+"<NUM>-10-18 18:04:20,<NUM> INFO [IPC Server handler 5 on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Progress of TaskAttempt attempt_<NUM>_<NUM>_m_<NUM>_0 is : 0.<HEX>",2
+"<NUM>-10-18 18:04:14,<NUM> INFO [IPC Server handler 5 on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Progress of TaskAttempt attempt_<NUM>_<NUM>_m_<NUM>_0 is : 0.<HEX>",2
+"<NUM>-10-18 18:03:28,<NUM> INFO [IPC Server handler 0 on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Progress of TaskAttempt attempt_<NUM>_<NUM>_m_<NUM>_0 is : 0.<HEX>",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Assigned container container_<NUM>_<NUM>_01_<NUM> to attempt_<NUM>_<NUM>_m_<NUM>_0",2
+"<NUM>-10-18 18:04:41,<NUM> INFO [IPC Server handler 17 on <NUM>] org.apache.hadoop.mapred.TaskAttemptListenerImpl: Progress of TaskAttempt attempt_<NUM>_<NUM>_m_<NUM>_0 is : 0.<HEX>",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.yarn.util.RackResolver: Resolved MSRA-SA-41.fareast.corp.microsoft.com to <PATH>",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_<NUM>_<NUM>_m_<NUM>_0 TaskAttempt Transitioned from UNASSIGNED to ASSIGNED",2
+"<NUM>-10-18 18:01:51,<NUM> INFO [main] org.apache.hadoop.http.HttpServer2: adding path spec: <PATH>",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: TaskAttempt: [attempt_<NUM>_<NUM>_m_<NUM>_0] using containerId: [container_<NUM>_<NUM>_01_<NUM> on NM: [MSRA-SA-41.fareast.corp.microsoft.com:<NUM>]",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: attempt_<NUM>_<NUM>_m_<NUM>_0 TaskAttempt Transitioned from ASSIGNED to RUNNING",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskImpl: task_<NUM>_<NUM>_m_<NUM> Task Transitioned from SCHEDULED to RUNNING",2
+"<NUM>-10-18 18:03:55,<NUM> INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.speculate.DefaultSpeculator: ATTEMPT_START task_<NUM>_<NUM>_m_<NUM>",2

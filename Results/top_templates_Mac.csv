@@ -1,0 +1,21 @@
+template,count
+Jul  4 23:22:09 calvisitor-10-<NUM>-<NUM>-<NUM> Microsoft Word[<NUM>]: Cocoa scripting error for '<HEX>': four character codes must be four characters long.,3930
+>,499
+),369
+Will attempt to recover by breaking constraint,273
+Set the NSUserDefault NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints to YES to have -[NSWindow visualizeConstraints:] automatically called when this happens.  And<PATH> break on objc_exception_throw to catch this in the debugger.,273
+(,272
+"path=""<PATH>",234
+"""<NSLayoutConstraint:<HEX> H:[NSImageView:<HEX>(38)]>"",",222
+"""<NSLayoutConstraint:<HEX> H:[NSImageView:<HEX>]-(10)-[NSTextField:<HEX>]>"",",222
+"""<NSLayoutConstraint:<HEX> H:|-(14)-[NSImageView:<HEX>]   (Names: PageItemCell:<HEX>, '|':PageItemCell:<HEX> )>"",",222
+"""<NSLayoutConstraint:<HEX> H:[NSTextField:<HEX>]-(14)-|   (Names: PageItemCell:<HEX>, '|':PageItemCell:<HEX> )>"",",222
+<NSLayoutConstraint:<HEX> H:[NSImageView:<HEX>(38)]>,222
+Those messages may not appear in standard system log files or in the ASL database.,180
+<<PATH>,152
+)),147
+"""<NSLayoutConstraint:<HEX> 'NSView-Encapsulated-Layout-Width' H:[PageItemCell(73)]   (Names: PageItemCell:<HEX> )>"",",135
+"""<NSLayoutConstraint:<HEX> H:[NSTextField:<HEX>]-(>=NSSpace(8))-[NSTextField:<HEX>]>""",135
+lockFile=<KSLockFile:<HEX>,117
+locked=NO,117
+actionQueue=( ),114

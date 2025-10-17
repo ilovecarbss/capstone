@@ -1,0 +1,21 @@
+template,count
+<NUM> Interconnect-1N01 switch_module error <HEX> 1 Linkerror event interval expired,117
+<NUM> gige7 gige temperature <HEX> 1 warning,95
+<NUM> gige7 gige temperature <HEX> 1 normal,92
+<NUM> Interconnect-0N00 switch_module fan <HEX> 1 Fan speeds ( <NUM> <NUM> <NUM> **** <NUM> <NUM> ),79
+<NUM> node-<NUM> node status <HEX> 1 running,54
+<NUM> Interconnect-1N03 switch_module error <HEX> 1 Linkerror event interval expired,49
+<NUM> node-<NUM> action start <HEX> 1 wait  (command <NUM>),49
+<NUM> gige6 gige temperature <HEX> 1 normal,46
+<NUM> node-<NUM> node status <HEX> 0 running,44
+<NUM> node-<NUM> node status <HEX> 1 configured out,39
+<NUM> Interconnect-1N00 switch_module error <HEX> 1 Linkerror event interval expired,39
+<NUM> node-<NUM> action start <HEX> 1 boot  (command <NUM>),37
+<NUM> gige3 gige temperature <HEX> 1 normal,37
+<NUM> Interconnect-0N00 switch_module error <HEX> 1 Linkerror event interval expired,36
+<NUM> Interconnect-0N03 switch_module error <HEX> 1 Linkerror event interval expired,34
+<NUM> Interconnect-1T01 switch_module error <HEX> 1 link errors remain current,33
+<NUM> node-<NUM> node temperature <HEX> 1 ambient=30,32
+<NUM> gige6 gige temperature <HEX> 1 warning,32
+<NUM> node-<NUM> node status <HEX> 1 not responding,30
+<NUM> node-<NUM> unix.hw net.niff.up <HEX> 1 NIFF: node node-<NUM> has detected an available network connection on network <IP> via interface alt0,30

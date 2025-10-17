@@ -1,0 +1,2 @@
+dataset,n_samples,exact_accuracy,fuzzy_similarity,tag_precision,tag_recall,tag_f1
+OpenSSH_2k,2000,0.0,0.8688713579893594,0.0,0.0,0.0

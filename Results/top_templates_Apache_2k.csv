@@ -1,0 +1,21 @@
+template,count
+[Mon Dec 05 07:57:02 <NUM>] [notice] workerEnv.init() ok <PATH>,7
+[Mon Dec 05 04:14:00 <NUM>] [notice] workerEnv.init() ok <PATH>,7
+[Sun Dec 04 07:18:00 <NUM>] [notice] workerEnv.init() ok <PATH>,7
+[Mon Dec 05 10:59:29 <NUM>] [notice] workerEnv.init() ok <PATH>,7
+[Sun Dec 04 17:43:12 <NUM>] [notice] workerEnv.init() ok <PATH>,7
+[Sun Dec 04 05:04:04 <NUM>] [notice] workerEnv.init() ok <PATH>,7
+[Sun Dec 04 17:01:47 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 17:20:44 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 19:36:07 <NUM>] [error] mod_jk child workerEnv in error state 6,5
+[Sun Dec 04 16:56:27 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 17:01:47 <NUM>] [error] mod_jk child workerEnv in error state 6,5
+[Sun Dec 04 06:22:53 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 19:36:07 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 07:02:01 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 06:12:37 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 16:52:49 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 16:48:01 <NUM>] [notice] workerEnv.init() ok <PATH>,5
+[Sun Dec 04 06:02:07 <NUM>] [notice] workerEnv.init() ok <PATH>,4
+[Mon Dec 05 04:01:23 <NUM>] [error] mod_jk child workerEnv in error state 6,4
+[Mon Dec 05 13:47:11 <NUM>] [notice] workerEnv.init() ok <PATH>,4

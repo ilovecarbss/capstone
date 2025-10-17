@@ -1,0 +1,21 @@
+template,count
+"- <HEX> <NUM>.09.20 NULL <NUM>-09-20-12.06.59.<NUM> NULL RAS MMCS ERROR idoproxydb hit ASSERT condition: ASSERT expression=0 Source file=idotransportmgr.cpp Source line=<NUM> Function=int IdoTransportMgr::SendPacket(IdoUdpMgr*, BglCtlPavTrace*)",2
+- <HEX> <NUM>.06.03 R02-M1-N0-C:J12-U11 <NUM>-06-03-15.42.50.<NUM> R02-M1-N0-C:J12-U11 RAS KERNEL INFO instruction cache parity error corrected,1
+- <HEX> <NUM>.08.27 R11-M1-N7 <NUM>-08-27-18.49.52.<NUM> R11-M1-N7 NULL DISCOVERY ERROR Node card status: no ALERTs are active. Clock Mode is Low. Clock Select is Midplane. Phy JTAG Reset is asserted. ASIC JTAG Reset is asserted. Temperature Mask is not active. No temperature error. Temperature Limit Error Latch is clear. PGOOD IS NOT ASSERTED. PGOOD ERROR LATCH IS ACTIVE. MPGOOD IS NOT OK. MPGOOD ERROR LATCH IS ACTIVE. The 2.5 volt rail is OK. The 1.5 volt rail is OK.,1
+- <HEX> <NUM>.08.28 R44-M0-NE-C:J10-U01 <NUM>-08-28-02.33.45.<NUM> R44-M0-NE-C:J10-U01 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R44-M0-NF-C:J13-U11 <NUM>-08-28-02.33.11.<NUM> R44-M0-NF-C:J13-U11 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R55-M0-N2-C:J08-U01 <NUM>-08-28-02.30.29.<NUM> R55-M0-N2-C:J08-U01 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R41-M0-N2-C:J10-U01 <NUM>-08-28-02.25.52.<NUM> R41-M0-N2-C:J10-U01 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R70-M0-NF-C:J06-U01 <NUM>-08-28-02.16.18.<NUM> R70-M0-NF-C:J06-U01 RAS KERNEL INFO iar <HEX> dear <HEX>,1
+- <HEX> <NUM>.08.28 R76-M1-ND-C:J11-U11 <NUM>-08-28-02.15.25.<NUM> R76-M1-ND-C:J11-U11 RAS KERNEL INFO iar <HEX> dear <HEX>,1
+- <HEX> <NUM>.08.28 R74-M0-NB-C:J17-U01 <NUM>-08-28-02.13.32.<NUM> R74-M0-NB-C:J17-U01 RAS KERNEL INFO iar <HEX> dear <HEX>,1
+- <HEX> <NUM>.08.28 R75-M1-N8-C:J13-U11 <NUM>-08-28-02.11.08.<NUM> R75-M1-N8-C:J13-U11 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R73-M1-N8-C:J06-U01 <NUM>-08-28-02.09.20.<NUM> R73-M1-N8-C:J06-U01 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R72-M1-NA-C:J04-U11 <NUM>-08-28-02.00.10.<NUM> R72-M1-NA-C:J04-U11 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+- <HEX> <NUM>.08.28 R77-M1-NF-C:J02-U11 <NUM>-08-28-01.58.37.<NUM> R77-M1-NF-C:J02-U11 RAS KERNEL INFO <HEX> double-hummer alignment exceptions,1
+"- <HEX> <NUM>.08.27 R14-M1-N0-C:J07-U11 <NUM>-08-27-23.11.52.<NUM> R14-M1-N0-C:J07-U11 RAS KERNEL INFO CE sym 10, at <HEX>, mask <HEX>",1
+"- <HEX> <NUM>.08.27 R36-M0-N5-C:J03-U01 <NUM>-08-27-06.25.05.<NUM> R36-M0-N5-C:J03-U01 RAS KERNEL INFO CE sym 23, at <HEX>, mask <HEX>",1
+- <HEX> <NUM>.08.26 R66-M0-N0-C:J16-U01 <NUM>-08-26-12.26.19.<NUM> R66-M0-N0-C:J16-U01 RAS KERNEL INFO iar <HEX> dear <HEX>,1
+"- <HEX> <NUM>.08.26 R74-M1-N0-C:J12-U01 <NUM>-08-26-20.51.56.<NUM> R74-M1-N0-C:J12-U01 RAS KERNEL INFO 1 ddr errors(s) detected and corrected on rank 0, symbol 28, bit 3",1
+"- <HEX> <NUM>.08.26 R14-M1-N5-C:J12-U11 <NUM>-08-26-13.19.21.<NUM> R14-M1-N5-C:J12-U11 RAS KERNEL INFO CE sym 0, at <HEX>, mask <HEX>",1
+- <HEX> <NUM>.08.26 R64-M0-N1-C:J02-U01 <NUM>-08-26-12.31.35.<NUM> R64-M0-N1-C:J02-U01 RAS KERNEL INFO iar <HEX> dear <HEX>,1

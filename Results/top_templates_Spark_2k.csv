@@ -1,0 +1,21 @@
+template,count
+17<PATH> 20:11:10 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,55
+17<PATH> 20:11:08 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,39
+17<PATH> 20:11:09 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,36
+17<PATH> 20:10:55 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,30
+17<PATH> 20:11:08 INFO rdd.HadoopRDD: Input split: hdfs:<PATH>:<NUM><PATH>:<NUM>+<NUM>,30
+17<PATH> 20:10:54 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,25
+17<PATH> 20:10:56 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,25
+17<PATH> 20:10:53 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,25
+17<PATH> 20:10:58 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,15
+17<PATH> 20:11:11 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,15
+17<PATH> 20:10:57 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 1,15
+17<PATH> 20:10:58 INFO output.FileOutputCommitter: Saved output of task 'attempt_<NUM>_<NUM>_m_<NUM>_<NUM>' to hdfs:<PATH>:<NUM><PATH>,15
+17<PATH> 20:10:57 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,15
+17<PATH> 20:10:58 INFO mapred.SparkHadoopMapRedUtil: attempt_<NUM>_<NUM>_m_<NUM>_<NUM>: Committed,15
+17<PATH> 20:10:58 INFO executor.Executor: Running task <NUM>.0 in stage 24.0 (TID <NUM>),10
+17<PATH> 20:10:58 INFO executor.Executor: Finished task <NUM>.0 in stage 24.0 (TID <NUM>). <NUM> bytes result sent to driver,10
+17<PATH> 20:10:57 INFO mapred.SparkHadoopMapRedUtil: attempt_<NUM>_<NUM>_m_<NUM>_<NUM>: Committed,10
+17<PATH> 20:10:57 INFO output.FileOutputCommitter: Saved output of task 'attempt_<NUM>_<NUM>_m_<NUM>_<NUM>' to hdfs:<PATH>:<NUM><PATH>,10
+17<PATH> 20:10:58 INFO output.FileOutputCommitter: File Output Committer Algorithm version is 1,10
+17<PATH> 20:11:07 INFO executor.CoarseGrainedExecutorBackend: Got assigned task <NUM>,10

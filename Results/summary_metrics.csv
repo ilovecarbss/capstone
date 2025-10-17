@@ -1,0 +1,15 @@
+dataset,num_lines,unique_templates,template_density
+Apache_2k,2000,1454,0.727
+BGL_2k,2000,1999,0.9995
+HDFS_2k,2000,101,0.0505
+HPC_2k,2000,420,0.21
+Hadoop_2k,2000,1945,0.9725
+HealthApp_2k,2000,1574,0.787
+Linux_2k,2000,791,0.3955
+Mac,117283,83255,0.7099
+OpenSSH_2k,2000,1991,0.9955
+OpenStack_2k,2000,1620,0.81
+Proxifier_2k,2000,1697,0.8485
+Spark_2k,2000,1429,0.7145
+Thunderbird_2k,2000,1944,0.972
+Zookeeper_2k,2000,1749,0.8745

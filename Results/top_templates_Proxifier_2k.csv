@@ -1,0 +1,21 @@
+template,count
+[10.30 16:53:24] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,14
+[10.30 16:49:28] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,12
+[10.30 16:54:07] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,11
+[10.30 16:49:29] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,8
+[10.30 16:49:11] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,8
+[10.30 20:43:46] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,7
+[10.30 16:49:56] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,6
+[10.30 16:49:53] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[07.26 19:00:52] tencentdl.exe - puui.qpic.cn:80 open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 18:03:47] firefox.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 17:59:13] firefox.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[07.27 03:00:21] chrome.exe *64 - clients5.google.com:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 17:40:21] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 16:49:10] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 17:40:07] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 16:49:07] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 20:45:21] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[07.26 19:00:52] tencentdl.exe - fs-conn-doctor.qq.com:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[10.30 16:49:09] chrome.exe - proxy.cse.cuhk.edu.hk:<NUM> open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,5
+[07.26 14:45:38] chrome.exe *64 - t12.baidu.com:80 open through proxy proxy.cse.cuhk.edu.hk:<NUM> HTTPS,4
