@@ -1,44 +1,93 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# ### REQUREMENTS
+
+# In[ ]:
+
+
+#%pip install -r "C:\Users\harik\KS\requirements.txt"
+
+
+
+
+
+# ### ENV
+
+# ### Cell 1
+
+# In[5]:
+
+
 import os
-BASE_DIR = r"C:\Users\harik\KS"      
-INPUT_LOGS      = os.path.join(BASE_DIR, "Dataset")      
-PROCESSED_OUT   = os.path.join(BASE_DIR, "Processed")     
-RESULTS_OUT     = os.path.join(BASE_DIR, "Results")       
+import torch
+
+BASE_DIR = r"C:\Users\harik\KS"
+INPUT_LOGS      = os.path.join(BASE_DIR, "Dataset")
+PROCESSED_OUT   = os.path.join(BASE_DIR, "Processed")
+RESULTS_OUT     = os.path.join(BASE_DIR, "Results")
 STARTER_FOLDER  = os.path.join(BASE_DIR, "loghub_starter")
+
 for p in (PROCESSED_OUT, RESULTS_OUT, STARTER_FOLDER):
     os.makedirs(p, exist_ok=True)
-print("Input logs :", INPUT_LOGS)
-print("Processed  :", PROCESSED_OUT)
-print("Results    :", RESULTS_OUT)
-print("Starter    :", STARTER_FOLDER)
+
+assert os.path.isdir(INPUT_LOGS), f"INPUT_LOGS not found: {INPUT_LOGS}"
+
+DEVICE = 0 if torch.cuda.is_available() else -1
+print("CUDA available :", torch.cuda.is_available())
+print("Selected device:", "GPU:0" if DEVICE == 0 else "CPU")
+
+print(f"Input logs : {INPUT_LOGS}")
+print(f"Processed  : {PROCESSED_OUT}")
+print(f"Results    : {RESULTS_OUT}")
+print(f"Starter    : {STARTER_FOLDER}")
+
+
+
+
+
+# ### Cell 2A
+
+# In[7]:
+
+
 import pathlib
+
 preprocess_file = pathlib.Path(STARTER_FOLDER) / "preprocess_logs.py"
 code = r'''
-import re, argparse
+import re, argparse, gzip
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
+
 RE_IPV4 = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b')
 RE_HEX  = re.compile(r'\b0x[0-9a-fA-F]+\b|\b[0-9a-fA-F]{8,}\b')
 RE_UUID = re.compile(r'\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\b')
 RE_PATH = re.compile(r'(/[^ \t\n\r\f\v:]+)+|([A-Za-z]:\\[^ \t\n\r\f\v]+)')
 RE_NUM  = re.compile(r'(?<![A-Za-z])\d{3,}(?![A-Za-z])')
 RE_PORT = re.compile(r'\bport\s+\d+\b', re.IGNORECASE)
+
 TS_FORMATS = ["%Y-%m-%d %H:%M:%S,%f","%Y-%m-%d %H:%M:%S","%b %d %H:%M:%S"]
+
 def try_parse_ts(prefix: str):
     prefix = prefix.strip()
-    m = re.match(r'^(\d{6})\s+(\d{6})', prefix)  # e.g., 081109 203615
+    m = re.match(r'^(\d{6})\s+(\d{6})', prefix)
     if m:
         date, time_ = m.group(1), m.group(2)
-        try: return datetime.strptime(date+time_, "%y%m%d%H%M%S").isoformat()
-        except: pass
+        try:
+            return datetime.strptime(date+time_, "%y%m%d%H%M%S").isoformat()
+        except:
+            pass
     for fmt in TS_FORMATS:
         try:
             dt = datetime.strptime(prefix, fmt)
             if fmt == "%b %d %H:%M:%S":
                 dt = dt.replace(year=datetime.now().year)
             return dt.isoformat()
-        except: pass
+        except:
+            pass
     return None
+
 def mask_template(msg: str) -> str:
     s = msg
     s = RE_UUID.sub("<UUID>", s)
@@ -48,34 +97,50 @@ def mask_template(msg: str) -> str:
     s = RE_HEX.sub("<HEX>", s)
     s = RE_NUM.sub("<NUM>", s)
     return s
+
 def split_level_component(line: str):
-    level = None; component = None
+    level = None
+    component = None
     for lvl in ["TRACE","DEBUG","INFO","WARN","WARNING","ERROR","FATAL","CRITICAL"]:
         if re.search(rf'\b{lvl}\b', line):
-            level = lvl; break
+            level = lvl
+            break
     m = re.search(r'([A-Za-z_][\w\.-]{2,})(?:\[\d+\])?:', line) or re.search(r'\b([A-Za-z_][\w\.-]{2,})\b', line)
-    if m: component = m.group(1)
+    if m:
+        component = m.group(1)
     return level, component
+
 def parse_line(line: str):
     ts = None
     for sep in ["] ", " - ", ": ", "  "]:
         if sep in line[:40]:
-            ts = try_parse_ts(line.split(sep, 1)[0]); break
+            ts = try_parse_ts(line.split(sep, 1)[0])
+            break
     level, comp = split_level_component(line)
     return ts, level, comp, line.strip()
+
 def process_file(path: Path):
     rows = []
-    with path.open("r", errors="ignore", encoding="utf-8") as f:
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", errors="ignore", encoding="utf-8") as f:
         for i, line in enumerate(f, 1):
             line = line.rstrip("\n")
-            if not line: continue
+            if not line:
+                continue
             ts, level, comp, msg = parse_line(line)
+            if level == "WARNING": level = "WARN"
+            if level == "CRITICAL": level = "FATAL"
             rows.append({
-                "dataset": path.stem, "line_no": i, "timestamp": ts,
-                "level": level, "component": comp,
-                "message": msg, "template": mask_template(msg)
+                "dataset": path.parent.name or path.stem,
+                "line_no": i,
+                "timestamp": ts,
+                "level": level,
+                "component": comp,
+                "message": msg,
+                "template": mask_template(msg)
             })
     return pd.DataFrame(rows)
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True)
@@ -86,66 +151,99 @@ def main():
     frames = []
     for p in sorted(in_dir.rglob("*.log")):
         print("[+] Processing", p.name)
-        df = process_file(p); frames.append(df)
+        df = process_file(p)
+        frames.append(df)
         df.to_csv(out_dir / f"{p.stem}.csv", index=False, encoding="utf-8")
     if frames:
         pd.concat(frames, ignore_index=True).to_csv(out_dir / "ALL_combined.csv", index=False, encoding="utf-8")
         print("[OK] Wrote ALL_combined.csv")
     else:
         print("[WARN] No .log files found.")
+
 if __name__ == "__main__":
     main()
 '''
 preprocess_file.write_text(code, encoding="utf-8")
 print("Wrote:", preprocess_file)
+
+
+# ### 2b
+
+# In[8]:
+
+
 import os, subprocess, pathlib
-assert 'INPUT_LOGS' in globals() and 'PROCESSED_OUT' in globals() and 'STARTER_FOLDER' in globals(), "Run Cell 1."
+
+assert 'INPUT_LOGS' in globals() and 'PROCESSED_OUT' in globals() and 'STARTER_FOLDER' in globals(), "Run Cell 1 first."
+
 preprocess_file = pathlib.Path(STARTER_FOLDER) / "preprocess_logs.py"
+
 print("Logs folder exists:", os.path.isdir(INPUT_LOGS), "-", INPUT_LOGS)
 print("Starter script exists:", preprocess_file.exists(), "-", preprocess_file)
+
 os.makedirs(PROCESSED_OUT, exist_ok=True)
 env = dict(os.environ)
-env["PYTHONIOENCODING"] = "utf-8" 
+env["PYTHONIOENCODING"] = "utf-8"
+
 print("Preprocessing ...")
 proc = subprocess.run(
     ["python", str(preprocess_file), "--input", INPUT_LOGS, "--output", PROCESSED_OUT],
-    text=True, capture_output=True, env=env
+    text=True, env=env
 )
-print(proc.stdout)
 if proc.returncode != 0:
-    print("Error:\n", proc.stderr)
+    print("Error running preprocessor.")
 else:
     print("OK. CSVs written to:", PROCESSED_OUT)
+
+
+
+# ### 3A
+
+# In[9]:
+
+
 import pathlib
+
 evaluate_file = pathlib.Path(STARTER_FOLDER) / "evaluate_parsers.py"
 code = r'''
 import argparse
 import pandas as pd
 from pathlib import Path
+
 def template_stats(df):
     c = df["template"].value_counts().reset_index()
     c.columns = ["template","count"]
     return c
+
 def simple_anomalies(counts, z_thresh=3.0):
     mu = counts["count"].mean()
     sigma = counts["count"].std(ddof=0) or 1.0
     counts["z_score"] = (counts["count"] - mu) / sigma
     return counts[counts["z_score"] <= -z_thresh].sort_values("z_score")
+
 def per_dataset_reports(in_dir: Path, out_dir: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
     rows = []
     for p in sorted(in_dir.glob("*.csv")):
-        if p.name == "ALL_combined.csv": continue
+        if p.name == "ALL_combined.csv":
+            continue
         df = pd.read_csv(p, dtype=str)
-        ds = df.get("dataset", p.stem).iloc[0] if not df.empty else p.stem
+        if not df.empty and "dataset" in df.columns:
+            ds = str(df["dataset"].iloc[0]) or p.stem
+        else:
+            ds = p.stem
         n = len(df)
         u = df["template"].nunique(dropna=False) if "template" in df else 0
         top = template_stats(df).head(20) if "template" in df else pd.DataFrame()
         rare = simple_anomalies(template_stats(df)) if "template" in df else pd.DataFrame()
-        if not top.empty: top.to_csv(out_dir / f"top_templates_{ds}.csv", index=False, encoding="utf-8")
-        if not rare.empty: rare.to_csv(out_dir / f"anomalies_{ds}.csv", index=False, encoding="utf-8")
-        rows.append({"dataset": ds, "num_lines": n, "unique_templates": u, "template_density": round((u / max(n,1)), 4)})
+        if not top.empty:
+            top.to_csv(out_dir / f"top_templates_{ds}.csv", index=False, encoding="utf-8")
+        if not rare.empty:
+            rare.to_csv(out_dir / f"anomalies_{ds}.csv", index=False, encoding="utf-8")
+        rows.append({"dataset": ds, "num_lines": n, "unique_templates": u,
+                     "template_density": round((u / max(n,1)), 4)})
     pd.DataFrame(rows).sort_values("dataset").to_csv(out_dir / "summary_metrics.csv", index=False, encoding="utf-8")
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True)
@@ -153,14 +251,25 @@ def main():
     a = ap.parse_args()
     per_dataset_reports(Path(a.input), Path(a.output))
     print("[OK] Wrote metrics to", a.output)
+
 if __name__ == "__main__":
     main()
 '''
 evaluate_file.write_text(code, encoding="utf-8")
 print("Wrote:", evaluate_file)
+
+
+# ### 3B
+
+# In[10]:
+
+
 import os, subprocess, pathlib
-env = dict(os.environ); env["PYTHONIOENCODING"] = "utf-8"
+
+env = dict(os.environ)
+env["PYTHONIOENCODING"] = "utf-8"
 evaluate_file = pathlib.Path(STARTER_FOLDER) / "evaluate_parsers.py"
+
 print("Evaluating ...")
 proc = subprocess.run(
     ["python", str(evaluate_file), "--input", PROCESSED_OUT, "--output", RESULTS_OUT],
@@ -171,56 +280,112 @@ if proc.returncode != 0:
     print("Error:\n", proc.stderr)
 else:
     print("OK. Results written to:", RESULTS_OUT)
+
+
+
+# ### 4
+
+# In[11]:
+
+
 import os, glob, pandas as pd
+from IPython.display import display
+
 summary_path = os.path.join(RESULTS_OUT, "summary_metrics.csv")
 if os.path.exists(summary_path):
     print("Summary metrics (first 20 rows):")
     display(pd.read_csv(summary_path).head(20))
 else:
     print("summary_metrics.csv not found. Run Cell 3B first.")
+
 tops = sorted(glob.glob(os.path.join(RESULTS_OUT, "top_templates_*.csv")))
 if tops:
     print("\nSample top-templates file:", os.path.basename(tops[0]))
     display(pd.read_csv(tops[0]).head(10))
 else:
     print("No top_templates_*.csv produced yet.")
+
+
+
+
+
+# ### 5 - causes kernel shutdown 
+
+# In[12]:
+
+
 import os, pandas as pd, matplotlib.pyplot as plt
+
 summary_path = os.path.join(RESULTS_OUT, "summary_metrics.csv")
 if not os.path.exists(summary_path):
     print("summary_metrics.csv not found.")
 else:
     df = pd.read_csv(summary_path).sort_values("template_density", ascending=False)
-    plt.figure()
-    plt.bar(df["dataset"], df["template_density"])
+    plt.figure(figsize=(8,5))
+    plt.bar(df["dataset"], df["template_density"], color="skyblue", edgecolor="black")
     plt.xticks(rotation=60, ha="right")
     plt.title("Template Density by Dataset")
     plt.xlabel("Dataset")
     plt.ylabel("Template Density")
     plt.tight_layout()
     plt.show()
+
+
+
+# ### Cell 6
+
+# In[16]:
+
+
 import os
 LABELS_OUT = os.path.join(BASE_DIR, "Labels")
 MODEL_OUT  = os.path.join(BASE_DIR, "Models")
 os.makedirs(LABELS_OUT, exist_ok=True)
 os.makedirs(MODEL_OUT,  exist_ok=True)
-TARGET_DATASET = "OpenSSH_2k"  
-SAMPLE_SIZE    = 600           
+
+TARGET_DATASET = "OpenSSH_2k"
+
 print("Labels dir:", LABELS_OUT)
 print("Models dir:", MODEL_OUT)
+
+
+
+# ### Cell 7
+
+# In[17]:
+
+
 import os, json, pandas as pd
+
 csv_path = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")
 assert os.path.exists(csv_path), f"Missing {csv_path}"
 df = pd.read_csv(csv_path, dtype=str).fillna("")
-df = df.sample(min(SAMPLE_SIZE, len(df)), random_state=42).reset_index(drop=True)
-records = [{"dataset": TARGET_DATASET,
-            "message": r.get("message",""),
-            "level": r.get("level",""),
-            "component": r.get("component","")} for _, r in df.iterrows()]
+
+records = [
+    {
+        "dataset": TARGET_DATASET,
+        "message": r.get("message", ""),
+        "level": r.get("level", ""),
+        "component": r.get("component", "")
+    }
+    for _, r in df.iterrows()
+]
+
 jsonl_path = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_to_label.jsonl")
-with open(jsonl_path, "w", encoding="utf-8") as f:
+with open(jsonl_path, "w", encoding="utf-8", newline="\n") as f:
     for r in records:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
 print("Wrote:", jsonl_path, "| rows:", len(records))
+
+
+
+
+# ### Cell 8 
+
+# In[15]:
+
+
 FEW_SHOTS = [
     ("Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; rhost=218.188.2.4",
      "<MON> <DAY> <TIME> <HOST> sshd(pam_unix)[<NUM>]: authentication failure; rhost=<IP>"),
@@ -229,19 +394,32 @@ FEW_SHOTS = [
     ("2017-05-16 00:00:10.303 2931 INFO nova.compute.manager [instance: b9000564-....] Took 19.05 seconds to spawn the instance on the hypervisor.",
      "<DATE> <TIME> <NUM> INFO nova.compute.manager [instance: <UUID>] Took <NUM> seconds to spawn the instance on the hypervisor.")
 ]
+
 SYSTEM_INSTRUCTIONS = (
-"Task: Convert a raw log line into a stable template. "
-"Keep constant words, replace variables with tags: <IP> <NUM> <UUID> <PATH> <HEX> <DATE> <TIME> <MS> <HOST>. "
-"Output only the template (one line)."
+    "Task: Convert a raw log line into a stable template. "
+    "Keep constant words, replace variables with tags: <IP> <NUM> <UUID> <PATH> <HEX> <DATE> <TIME> <MS> <HOST>. "
+    "Output only the template (one line)."
 )
+
 def build_prompt(message, level, component):
-    demos = "\n\n".join([f"Input: {m}\nTemplate: {t}" for m,t in FEW_SHOTS])
+    demos = "\n\n".join([f"Input: {m}\nTemplate: {t}" for m, t in FEW_SHOTS])
     return f"{SYSTEM_INSTRUCTIONS}\n\n{demos}\n\nInput: {message}\nTemplate:"
+
+
+
+# ### Cell 9
+
+# In[18]:
+
+
 import re
+
 ALLOWED_TAGS = {"<IP>","<NUM>","<UUID>","<PATH>","<HEX>","<DATE>","<TIME>","<MS>","<HOST>"}
+
 def valid_template(t):
     bad = re.findall(r'<[^>]+>', t)
     return all(tag in ALLOWED_TAGS for tag in bad)
+
 def repair_template(raw):
     t = raw.strip()
     t = re.sub(r'\s+', ' ', t)
@@ -250,145 +428,144 @@ def repair_template(raw):
     t = re.sub(r'(?<![A-Za-z])\d{3,}(?![A-Za-z])', '<NUM>', t)
     t = t.replace("`","").replace('"','').replace("'", "")
     return t
+
 def correct_once(t):
     r = repair_template(t)
     if valid_template(r):
         return r
-    r = re.sub(r'<[^>]+>', '<NUM>', r)  
-    return r
+    return re.sub(r'<[^>]+>', '<NUM>', r)
+
+
+
+# ### Cell 10
+
+# In[19]:
+
+
 import os, json, re, pandas as pd
+from tqdm import tqdm
+
 jsonl_path = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_to_label.jsonl")
 assert os.path.exists(jsonl_path), "Run Cell 7 first."
+
 def quick_mask(s):
     s = re.sub(r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}', '<UUID>', s)
     s = re.sub(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', '<IP>', s)
     s = re.sub(r'(?<![A-Za-z])\d{3,}(?![A-Za-z])', '<NUM>', s)
     return s
+
 labeled = []
 with open(jsonl_path, "r", encoding="utf-8") as f:
-    for line in f:
+    for line in tqdm(f, desc="Masking + correcting"):
         r = json.loads(line)
-        raw_template = quick_mask(r["message"])           
-        cleaned      = correct_once(raw_template)          # self-correct
+        raw_template = quick_mask(r["message"])
+        cleaned = correct_once(raw_template)
         labeled.append({
             "dataset": r["dataset"],
             "message": r["message"],
-            "level":   r["level"],
+            "level": r["level"],
             "component": r["component"],
             "template": cleaned
         })
+
 labels_csv = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels.csv")
 pd.DataFrame(labeled).to_csv(labels_csv, index=False, encoding="utf-8")
 print("Wrote labels:", labels_csv, "| rows:", len(labeled))
-import os, re, json, time, math, pandas as pd, torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
-PREVIEW_LIMIT   = 80      
-BATCH_SIZE      = 16      
-MAX_NEW_TOKENS  = 32      
-TRUNC_INPUT_CH  = 220     
-os.environ.setdefault("HF_HOME", os.path.join(BASE_DIR, "hf_cache"))
-os.makedirs(os.environ["HF_HOME"], exist_ok=True)
-jsonl_path = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_to_label.jsonl")
-assert os.path.exists(jsonl_path), "Run Cell 7 first."
-LOCAL_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-tokenizer = AutoTokenizer.from_pretrained(LOCAL_MODEL, use_fast=True)
-model = AutoModelForCausalLM.from_pretrained(
-    LOCAL_MODEL,
-    torch_dtype=torch.float32,
-    low_cpu_mem_usage=True,
-    device_map="cpu",
-)
-model.eval()
-try:
-    torch.set_num_threads(max(1, os.cpu_count() or 1))
-except Exception:
-    pass
-SYSTEM_INSTRUCTIONS = (
-    "Task: Convert a raw log line into a stable template. "
-    "Keep constant words, replace variables with tags: <IP> <NUM> <UUID> <PATH> <HEX> <DATE> <TIME> <MS> <HOST>. "
-    "Output ONLY the template (one line). No explanations."
-)
-def build_prompt_fast(message: str) -> str:
-    msg = message.strip().replace("\n", " ")
-    if len(msg) > TRUNC_INPUT_CH:
-        msg = msg[:TRUNC_INPUT_CH] + " ..."
-    return f"{SYSTEM_INSTRUCTIONS}\n\nInput: {msg}\nTemplate:"
-TEMPLATE_GRAB = re.compile(r"Template:\s*(.*)", re.DOTALL)
-def extract_template(full_text: str) -> str:
-    m = TEMPLATE_GRAB.search(full_text)
-    txt = (m.group(1) if m else full_text).strip()
-    return txt.splitlines()[0]
-@torch.inference_mode()
-def batch_generate(prompts):
-    enc = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True).to(model.device)
-    out = model.generate(
-        **enc,
-        max_new_tokens=MAX_NEW_TOKENS,
-        do_sample=False,
-        num_beams=1,
-        eos_token_id=tokenizer.eos_token_id,
-        pad_token_id=tokenizer.eos_token_id,
-        use_cache=True,
-    )
-    texts = tokenizer.batch_decode(out, skip_special_tokens=True)
-    return [extract_template(t) for t in texts]
-records = []
-with open(jsonl_path, "r", encoding="utf-8") as f:
-    for i, line in enumerate(f):
-        r = json.loads(line)
-        records.append(r)
-        if len(records) >= PREVIEW_LIMIT:
-            break
-prompts = [build_prompt_fast(r["message"]) for r in records]
-rows = []
-t0 = time.time()
-for i in range(0, len(prompts), BATCH_SIZE):
-    batch_prompts = prompts[i:i+BATCH_SIZE]
-    raws = batch_generate(batch_prompts)
-    for raw, r in zip(raws, records[i:i+BATCH_SIZE]):
-        fixed = correct_once(raw)  
-        rows.append({**r, "template": fixed})
-dt = time.time() - t0
-preview_csv = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_llm_preview.csv")
-pd.DataFrame(rows).to_csv(preview_csv, index=False, encoding="utf-8")
-print(f"Wrote PREVIEW labels: {preview_csv} | rows: {len(rows)} | time: {dt:.1f}s (~{dt/max(1,len(rows)):.2f}s/line)")
+
+
+# ### Cell 11
+
+# In[20]:
+
+
 import sys, subprocess
-def pipi(pkgs): subprocess.check_call([sys.executable, "-m", "pip", "install", *pkgs])
-pipi(["transformers==4.44.2", "datasets==3.0.1", "accelerate==0.34.2", "evaluate==0.4.2", "sentencepiece==0.2.0", "scikit-learn==1.5.2"])
-pipi(['fsspec[http]==2024.6.1'])
+
+def pipi(pkgs):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", *pkgs])
+
+pipi(["transformers==4.44.2",
+      "datasets==3.0.1",
+      "accelerate==0.34.2",
+      "evaluate==0.4.2",
+      "sentencepiece==0.2.0",
+      "scikit-learn==1.5.2",
+      "fsspec[http]==2024.6.1",
+      "tqdm"])
+
+
+
+
+# ### Cell 12 – split train/val
+
+# In[21]:
+
+
 import os, pandas as pd
 from sklearn.model_selection import train_test_split
-llm_csv    = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_llm.csv")
-regex_csv  = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels.csv")
-labels_csv = llm_csv if os.path.exists(llm_csv) else regex_csv
+
+teacher_csv = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_teacher.csv")   # NEW
+llm_csv     = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_llm.csv")
+regex_csv   = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels.csv")
+
+labels_csv = teacher_csv if os.path.exists(teacher_csv) else (
+    llm_csv if os.path.exists(llm_csv) else regex_csv
+)
 print("Using labels:", labels_csv)
+
 df = pd.read_csv(labels_csv).fillna("")
-df = df[(df["message"].str.len()>0) & (df["template"].str.len()>0)].copy()
+df = df[(df["message"].str.len() > 0) & (df["template"].str.len() > 0)].copy()
+
 train_df, val_df = train_test_split(df, test_size=0.15, random_state=42)
 print("Train:", len(train_df), "Val:", len(val_df))
 train_df.head(3)
+
+
+
+
+# ### Cell 13 - tokenize
+
+# In[22]:
+
+
 from datasets import Dataset
 from transformers import AutoTokenizer
+
 model_name = "t5-small"
 SPECIALS = ["<IP>","<NUM>","<UUID>","<PATH>","<HEX>","<DATE>","<TIME>","<MS>","<HOST>"]
+
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.add_special_tokens({"additional_special_tokens": SPECIALS})
+
 def to_ds(frame):
     return Dataset.from_pandas(
-        frame[["message","template"]].rename(columns={"template":"labels"}),
+        frame[["message", "template"]].rename(columns={"template": "labels"}),
         preserve_index=False
     )
+
 train_ds = to_ds(train_df)
-val_ds   = to_ds(val_df)
+val_ds = to_ds(val_df)
+
 MAX_IN, MAX_OUT = 256, 128
+
 def preprocess_batch(batch):
-    ins  = tokenizer(batch["message"], max_length=MAX_IN, truncation=True)
+    ins = tokenizer(batch["message"], max_length=MAX_IN, truncation=True)
     outs = tokenizer(text_target=batch["labels"], max_length=MAX_OUT, truncation=True)
     ins["labels"] = outs["input_ids"]
     return ins
+
 train_tok = train_ds.map(preprocess_batch, batched=True, remove_columns=train_ds.column_names)
-val_tok   = val_ds.map(preprocess_batch,   batched=True, remove_columns=val_ds.column_names)
+val_tok = val_ds.map(preprocess_batch, batched=True, remove_columns=val_ds.column_names)
+
 print("Tokenized:", len(train_tok), "train /", len(val_tok), "val")
+
+
+
+
+# ### Cell 14 - run to here 
+
+# In[23]:
+
+
 import os
 from transformers import (
     AutoModelForSeq2SeqLM,
@@ -396,9 +573,12 @@ from transformers import (
     Trainer,
     Seq2SeqTrainingArguments,
 )
+
 save_dir = os.path.join(MODEL_OUT, f"{TARGET_DATASET}_t5_small")
 model = AutoModelForSeq2SeqLM.from_pretrained("t5-small")
-model.resize_token_embeddings(len(tokenizer))  
+model.resize_token_embeddings(len(tokenizer))
+
+fp16_flag = torch.cuda.is_available()  
 args = Seq2SeqTrainingArguments(
     output_dir=save_dir,
     num_train_epochs=3,
@@ -410,218 +590,7 @@ args = Seq2SeqTrainingArguments(
     logging_steps=50,
     weight_decay=0.01,
     predict_with_generate=True,
-    fp16=False,           # CPU
-    report_to=[],         
-    seed=42,
-    dataloader_num_workers=0,  # Windows stability
-    save_total_limit=2,
-    load_best_model_at_end=True,
-    metric_for_best_model="eval_loss",
-    greater_is_better=False,
-)
-data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
-trainer = Trainer(
-    model=model,
-    args=args,
-    train_dataset=train_tok,
-    eval_dataset=val_tok,
-    tokenizer=tokenizer,
-    data_collator=data_collator,
-)
-train_result = trainer.train()
-metrics = trainer.evaluate()
-metrics
-from transformers import pipeline
-pipe = pipeline("text2text-generation", model=trainer.model, tokenizer=tokenizer, max_new_tokens=64)
-samples = val_df.sample(min(5, len(val_df)), random_state=7)["message"].tolist()
-for s in samples:
-    out = pipe(s)[0]["generated_text"]
-    print("\nINPUT :", s[:160].replace("\n"," "))
-    print("OUTPUT:", out)
-import re
-TAG_WORDS = ["IP","NUM","UUID","PATH","HEX","DATE","TIME","MS","HOST"]
-TAG_FIX = re.compile(r'\b(' + '|'.join(TAG_WORDS) + r')\b>?')  
-def normalize_template_basic(s: str) -> str:
-    t = TAG_FIX.sub(lambda m: f"<{m.group(1)}>", s)
-    t = re.sub(r'\s+', ' ', t).strip()
-    return correct_once(t)  
-def normalize_out(s: str) -> str:
-    try:
-        return normalize_template_strict(s)  
-    except NameError:
-        return normalize_template_basic(s)
-from transformers import pipeline
-pipe = pipeline("text2text-generation", model=trainer.model, tokenizer=tokenizer, max_new_tokens=64, do_sample=False, num_beams=4)
-samples = val_df.sample(min(5, len(val_df)), random_state=7)["message"].tolist()
-for s in samples:
-    raw = pipe(s)[0]["generated_text"]
-    fixed = normalize_out(raw)
-    print("\nINPUT :", s[:160].replace("\n"," "))
-    print("RAW   :", raw)
-    print("FIXED :", fixed)
-i# 12B — normalize labels before training (run after Cell 12)
-import os, pandas as pd
-assert 'labels_csv' in globals(), "Run Cell 12 first to set labels_csv"
-df = pd.read_csv(labels_csv).fillna("")
-def _norm(t):
-    try:   return normalize_template_strict(t)   # uses 15C
-    except NameError:
-        return correct_once(t)                  # fallback
-df["template"] = df["template"].astype(str).map(_norm)
-clean_path = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_clean.csv")
-df.to_csv(clean_path, index=False, encoding="utf-8")
-print("Wrote cleaned labels:", clean_path)
-from sklearn.model_selection import train_test_split
-df = pd.read_csv(clean_path).fillna("")
-train_df, val_df = train_test_split(df, test_size=0.15, random_state=42)
-print("Train:", len(train_df), "Val:", len(val_df))
-import os
-final_dir = os.path.join(MODEL_OUT, f"{TARGET_DATASET}_t5_small_final")
-os.makedirs(final_dir, exist_ok=True)
-trainer.model.save_pretrained(final_dir)
-tokenizer.save_pretrained(final_dir)
-print("Saved model to:", final_dir)
-import os, time, pandas as pd, torch
-from transformers import pipeline
-from tqdm import tqdm
-csv_in  = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")
-csv_out = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds.csv")
-tmp_out = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds.tmp.csv")
-assert os.path.exists(csv_in), f"Missing {csv_in}"
-os.makedirs(RESULTS_OUT, exist_ok=True)
-PREVIEW_LIMIT  = None      
-BATCH_SIZE     = 128       
-MAX_NEW_TOKENS = 40        
-NUM_BEAMS      = 1       
-def _normalize(s: str) -> str:
-    try:    return normalize_template_strict(s)   
-    except: return correct_once(s)               
-try:
-    torch.set_num_threads(max(1, os.cpu_count() or 1))
-except Exception:
-    pass
-gen = pipeline(
-    "text2text-generation",
-    model=trainer.model,
-    tokenizer=tokenizer,
-    max_new_tokens=MAX_NEW_TOKENS,
-    do_sample=False,
-    num_beams=NUM_BEAMS,
-)
-df = pd.read_csv(csv_in, dtype=str).fillna("")
-if PREVIEW_LIMIT is not None:
-    df = df.head(PREVIEW_LIMIT).copy()
-msgs = df["message"].tolist()
-N = len(msgs)
-pred = [None] * N
-start_idx = 0
-if os.path.exists(tmp_out):
-    try:
-        tmp_df = pd.read_csv(tmp_out, dtype=str).fillna("")
-        if len(tmp_df) == N and "pred_template" in tmp_df:
-            pred = tmp_df["pred_template"].tolist()
-            for i, v in enumerate(pred):
-                if not isinstance(v, str) or v == "" or v.lower() == "nan":
-                    start_idx = i
-                    break
-                start_idx = N
-    except Exception:
-        pass
-t0 = time.time()
-with tqdm(total=N, desc="Inferring", initial=start_idx, unit="lines") as pbar:
-    for i in range(start_idx, N, BATCH_SIZE):
-        j = min(i + BATCH_SIZE, N)
-        outs = gen(msgs[i:j])
-        for k, o in enumerate(outs):
-            pred[i + k] = _normalize(o["generated_text"])
-        pbar.update(j - i)
-        if ((i // BATCH_SIZE) % 10 == 0) or (j == N):
-            df_tmp = df.copy()
-            df_tmp["pred_template"] = pred
-            df_tmp.to_csv(tmp_out, index=False, encoding="utf-8")
-df_out = df.copy()
-df_out["pred_template"] = pred
-df_out.to_csv(csv_out, index=False, encoding="utf-8")
-elapsed = time.time() - t0
-print(f"Wrote: {csv_out} | rows: {len(df_out)} | time: {elapsed:.1f}s (~{N/max(1,elapsed):.2f} lines/s)")
-print(f"(Checkpoint kept at: {tmp_out})")
-import os, pandas as pd
-csv_out = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_preds.csv")
-assert os.path.exists(csv_out), "Run Cell 17 first."
-dfp = pd.read_csv(csv_out, dtype=str).fillna("")
-cnt = dfp["pred_template"].value_counts().reset_index()
-cnt.columns = ["template","count"]
-display(cnt.head(20))
-top_path = os.path.join(RESULTS_OUT, f"top_pred_templates_{TARGET_DATASET}.csv")
-cnt.to_csv(top_path, index=False, encoding="utf-8")
-print("Saved tops to:", top_path)
-mu, sigma = cnt["count"].mean(), cnt["count"].std(ddof=0) or 1.0
-cnt["z_score"] = (cnt["count"] - mu) / sigma
-rare = cnt[cnt["z_score"] <= -3.0].sort_values("z_score")
-rare_path = os.path.join(RESULTS_OUT, f"anomalies_pred_{TARGET_DATASET}.csv")
-rare.to_csv(rare_path, index=False, encoding="utf-8")
-print("Saved anomalies to:", rare_path)
-display(rare.head(10))
-import os, pandas as pd
-from sklearn.model_selection import train_test_split
-llm_path   = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_llm_preview.csv")
-quick_path = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels.csv") 
-assert os.path.exists(llm_path), "Run Cell 10B (LLM labeling) first."
-df_llm = pd.read_csv(llm_path).fillna("")
-if os.path.exists(quick_path):
-    df_quick = pd.read_csv(quick_path).fillna("")
-    df_all = pd.concat(
-        [df_llm[["message","template"]], df_quick[["message","template"]]],
-        ignore_index=True
-    ).drop_duplicates()
-else:
-    df_all = df_llm[["message","template"]].drop_duplicates()
-try:
-    df_all["template"] = df_all["template"].astype(str).map(normalize_template_strict)
-except NameError:
-    df_all["template"] = df_all["template"].astype(str).map(correct_once)
-df_all = df_all[(df_all["message"].str.len()>0) & (df_all["template"].str.len()>0)].copy()
-train_df, val_df = train_test_split(df_all, test_size=0.15, random_state=42)
-print("V2 Train:", len(train_df), "Val:", len(val_df))
-train_df.head(3)
-import os
-from datasets import Dataset
-from transformers import (
-    AutoTokenizer, AutoModelForSeq2SeqLM,
-    DataCollatorForSeq2Seq, Trainer, Seq2SeqTrainingArguments
-)
-base_model_dir = os.path.join(MODEL_OUT, f"{TARGET_DATASET}_t5_small_final")
-assert os.path.exists(base_model_dir), "Run Cell 16 to save your first model."
-SPECIALS = ["<IP>","<NUM>","<UUID>","<PATH>","<HEX>","<DATE>","<TIME>","<MS>","<HOST>"]
-tokenizer = AutoTokenizer.from_pretrained(base_model_dir)
-tokenizer.add_special_tokens({"additional_special_tokens": SPECIALS})
-def to_ds(frame):
-    return Dataset.from_pandas(frame[["message","template"]].rename(columns={"template":"labels"}), preserve_index=False)
-train_ds = to_ds(train_df)
-val_ds   = to_ds(val_df)
-MAX_IN, MAX_OUT = 256, 128
-def preprocess_batch(batch):
-    ins  = tokenizer(batch["message"], max_length=MAX_IN, truncation=True)
-    outs = tokenizer(text_target=batch["labels"], max_length=MAX_OUT, truncation=True)
-    ins["labels"] = outs["input_ids"]
-    return ins
-train_tok = train_ds.map(preprocess_batch, batched=True, remove_columns=train_ds.column_names)
-val_tok   = val_ds.map(preprocess_batch,   batched=True, remove_columns=val_ds.column_names)
-model = AutoModelForSeq2SeqLM.from_pretrained(base_model_dir)
-model.resize_token_embeddings(len(tokenizer))
-save_dir = os.path.join(MODEL_OUT, f"{TARGET_DATASET}_t5_small_v2")
-args = Seq2SeqTrainingArguments(
-    output_dir=save_dir,
-    num_train_epochs=1,   # short adaptive pass
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
-    learning_rate=2e-4,
-    evaluation_strategy="epoch",
-    save_strategy="epoch",
-    logging_steps=50,
-    weight_decay=0.01,
-    predict_with_generate=True,
-    fp16=False,
+    fp16=fp16_flag,
     report_to=[],
     seed=42,
     dataloader_num_workers=0,
@@ -630,230 +599,469 @@ args = Seq2SeqTrainingArguments(
     metric_for_best_model="eval_loss",
     greater_is_better=False,
 )
+
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
-trainer_v2 = Trainer(
-    model=model, args=args,
-    train_dataset=train_tok, eval_dataset=val_tok,
-    tokenizer=tokenizer, data_collator=data_collator
+
+trainer = Trainer(
+    model=model,
+    args=args,
+    train_dataset=train_tok,
+    eval_dataset=val_tok,
+    tokenizer=tokenizer,
+    data_collator=data_collator,
 )
-train_result_v2 = trainer_v2.train()
-metrics_v2 = trainer_v2.evaluate()
-metrics_v2
-final_v2_dir = os.path.join(MODEL_OUT, f"{TARGET_DATASET}_t5_small_v2_final")
-os.makedirs(final_v2_dir, exist_ok=True)
-trainer_v2.model.save_pretrained(final_v2_dir)
-tokenizer.save_pretrained(final_v2_dir)
-print("Saved v2 model to:", final_v2_dir)
-import os, time, math, pandas as pd, torch
+
+train_result = trainer.train()
+metrics = trainer.evaluate()
+metrics
+
+
+
+
+# ### Cell 15- Save fine-tuned model/tokenizer
+
+# In[24]:
+
+
+import os, json, time
+from shutil import rmtree
+from pathlib import Path
+
+FINAL_MODEL_DIR = os.path.join(BASE_DIR, "final_model")
+HF_DIR          = os.path.join(FINAL_MODEL_DIR, "hf_model")
+TOK_DIR         = os.path.join(FINAL_MODEL_DIR, "tokenizer")
+
+
+for p in (HF_DIR, TOK_DIR):
+    if os.path.isdir(p): rmtree(p, ignore_errors=True)
+
+
+tokenizer.save_pretrained(TOK_DIR)
+model.save_pretrained(HF_DIR)
+
+
+schema = {
+    "required_keys": ["timestamp","level","source","template_id","template","vars","fuzzy_score","raw"]
+}
+build_info = {
+    "model_version": "v1.0",
+    "trained_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    "target_dataset": TARGET_DATASET,
+    "hf_model": "t5-small",
+    "save_dir": save_dir,
+    "device": "cuda" if torch.cuda.is_available() else "cpu",
+    "notes": "T5 seq2seq fine-tuned on full dataset (message->template)."
+}
+
+os.makedirs(FINAL_MODEL_DIR, exist_ok=True)
+with open(os.path.join(FINAL_MODEL_DIR, "schema.json"), "w", encoding="utf-8") as f:
+    json.dump(schema, f, indent=2)
+with open(os.path.join(FINAL_MODEL_DIR, "build_info.json"), "w", encoding="utf-8") as f:
+    json.dump(build_info, f, indent=2)
+
+print("Final model saved at:", FINAL_MODEL_DIR)
+
+
+
+# ### Cell 16 GPU inference over full dataset to produce structured JSONL/CSV
+
+# In[27]:
+
+
+import os, json, pandas as pd
 from transformers import pipeline
 from tqdm import tqdm
-csv_in  = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")
-csv_out = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds_v2.csv")
-tmp_out = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds_v2.tmp.csv")
+
+csv_in = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")
 assert os.path.exists(csv_in), f"Missing {csv_in}"
-def _normalize(s: str) -> str:
-    try:    return normalize_template_strict(s)   
-    except: return correct_once(s)                
-final_v2_dir = os.path.join(MODEL_OUT, f"{TARGET_DATASET}_t5_small_v2_final")
-assert os.path.exists(final_v2_dir), "Run Cells 20–21 first."
-os.makedirs(RESULTS_OUT, exist_ok=True)
-BATCH_SIZE     = 128     
-MAX_NEW_TOKENS = 40      
-NUM_BEAMS      = 1       
-PREVIEW_LIMIT  = None   
-try:
-    torch.set_num_threads(max(1, os.cpu_count() or 1))
-except Exception:
-    pass
+raw_df = pd.read_csv(csv_in, dtype=str).fillna("")
+assert "message" in raw_df.columns, "Expected 'message' column in processed CSV."
+
 gen = pipeline(
     "text2text-generation",
-    model=final_v2_dir,
-    tokenizer=final_v2_dir,
-    max_new_tokens=MAX_NEW_TOKENS,
+    model=os.path.join(FINAL_MODEL_DIR, "hf_model"),
+    tokenizer=os.path.join(FINAL_MODEL_DIR, "tokenizer"),
+    device=DEVICE,
     do_sample=False,
-    num_beams=NUM_BEAMS,
+    num_beams=4,
+    max_new_tokens=64,
 )
-df = pd.read_csv(csv_in, dtype=str).fillna("")
-if PREVIEW_LIMIT is not None:
-    df = df.head(PREVIEW_LIMIT).copy()
-msgs = df["message"].tolist()
-N = len(msgs)
-pred = [None] * N
-start_idx = 0
-if os.path.exists(tmp_out):
-    try:
-        tmp_df = pd.read_csv(tmp_out, dtype=str).fillna("")
-        if len(tmp_df) == N and "pred_template" in tmp_df:
-            pred = tmp_df["pred_template"].tolist()
-            for i, v in enumerate(pred):
-                if not isinstance(v, str) or v == "" or v.lower() == "nan":
-                    start_idx = i
-                    break
-                start_idx = N
-    except Exception:
-        pass
-t0 = time.time()
-with tqdm(total=N, desc="Inferring", initial=start_idx, unit="lines") as pbar:
-    for i in range(start_idx, N, BATCH_SIZE):
-        j = min(i + BATCH_SIZE, N)
-        outs = gen(msgs[i:j])
-        for k, o in enumerate(outs):
-            pred[i + k] = _normalize(o["generated_text"])
-        pbar.update(j - i)
-        if ((i // BATCH_SIZE) % 10 == 0) or (j == N):
-            df_tmp = df.copy()
-            df_tmp["pred_template"] = pred
-            df_tmp.to_csv(tmp_out, index=False, encoding="utf-8")
-df_out = df.copy()
-df_out["pred_template"] = pred
-df_out.to_csv(csv_out, index=False, encoding="utf-8")
-elapsed = time.time() - t0
-print(f"Wrote: {csv_out} | rows: {len(df_out)} | time: {elapsed:.1f}s (~{N/max(1,elapsed):.2f} lines/s)")
-print(f"(Checkpoint kept at: {tmp_out})")
-import pandas as pd, os
-from sklearn.metrics import accuracy_score, f1_score
-csv_ref  = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")          # reference (regex templates)
-csv_pred = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds_v2.csv")  # your model's predictions
-assert os.path.exists(csv_ref) and os.path.exists(csv_pred), "Missing input or prediction CSV"
-ref  = pd.read_csv(csv_ref, dtype=str).fillna("")
-pred = pd.read_csv(csv_pred, dtype=str).fillna("")
-merged = ref.merge(pred[["message","pred_template"]], on="message", how="inner")
-def normalize_for_eval(t: str) -> str:
-    t = str(t).strip().lower()
-    t = t.replace(" ", "")
-    return t
-y_true = merged["template"].map(normalize_for_eval)
-y_pred = merged["pred_template"].map(normalize_for_eval)
-acc = (y_true == y_pred).mean()
-print(f"Template match accuracy: {acc*100:.2f}%")
-from difflib import SequenceMatcher
-def sim(a,b): return SequenceMatcher(None,a,b).ratio()
-fuzzy = [sim(a,b) for a,b in zip(y_true,y_pred)]
-print(f"Avg fuzzy similarity: {sum(fuzzy)/len(fuzzy)*100:.2f}%  (higher = better)")
-import os, pandas as pd
-from difflib import SequenceMatcher
-csv_ref  = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")
-csv_pred = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds_v2.csv")
-assert os.path.exists(csv_ref) and os.path.exists(csv_pred), "Missing input or prediction CSV"
-ref  = pd.read_csv(csv_ref, dtype=str).fillna("")
-pred = pd.read_csv(csv_pred, dtype=str).fillna("")
-merged = ref.merge(pred[["message","pred_template"]], on="message", how="inner")
-assert len(merged) > 0, "No overlap between reference and predictions."
-def norm_both(t: str) -> str:
-    try:
-        return normalize_template_strict(str(t))
-    except NameError:
-        return correct_once(str(t))
-y_true_n = merged["template"].map(norm_both)
-y_pred_n = merged["pred_template"].map(norm_both)
-exact = (y_true_n == y_pred_n).mean()
-def sim(a,b): return SequenceMatcher(None, a, b).ratio()
-fuzzy = sum(sim(a,b) for a,b in zip(y_true_n, y_pred_n)) / len(merged)
-print(f"Exact match (normalized): {exact*100:.2f}%")
-print(f"Avg fuzzy similarity (normalized): {fuzzy*100:.2f}%")
-import re
-import numpy as np
-TAG = re.compile(r'<[A-Z]+>')
-def tags(seq: str):
-    return TAG.findall(seq or "")
-true_tags = y_true_n.map(tags)
-pred_tags = y_pred_n.map(tags)
-tp = fp = fn = 0
-for t, p in zip(true_tags, pred_tags):
-    t_counts = {}
-    for x in t: t_counts[x] = t_counts.get(x, 0) + 1
-    p_counts = {}
-    for x in p: p_counts[x] = p_counts.get(x, 0) + 1
-    for tag in set(t_counts) | set(p_counts):
-        ct, cp = t_counts.get(tag, 0), p_counts.get(tag, 0)
-        tp += min(ct, cp)
-        fp += max(0, cp - ct)
-        fn += max(0, ct - cp)
-prec = tp / (tp + fp) if (tp+fp) else 0.0
-rec  = tp / (tp + fn) if (tp+fn) else 0.0
-f1   = 2*prec*rec/(prec+rec) if (prec+rec) else 0.0
-print(f"Tag-only micro P/R/F1: {prec:.3f}/{rec:.3f}/{f1:.3f}")
-import os, re
-import pandas as pd
-from difflib import SequenceMatcher
-from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-assert 'PROCESSED_OUT' in globals() and 'RESULTS_OUT' in globals() and 'TARGET_DATASET' in globals(), \
-    "Run Cell 1 and Cell 6 first to define paths and TARGET_DATASET."
-csv_ref  = os.path.join(PROCESSED_OUT, f"{TARGET_DATASET}.csv")
-csv_pred = os.path.join(RESULTS_OUT,  f"{TARGET_DATASET}_preds_v2.csv")
-assert os.path.exists(csv_ref) and os.path.exists(csv_pred), "Missing input or prediction CSV"
-ref  = pd.read_csv(csv_ref, dtype=str).fillna("")
-pred = pd.read_csv(csv_pred, dtype=str).fillna("")
-merged = ref.merge(pred[["message","pred_template"]], on="message", how="inner")
-assert len(merged) > 0, "No overlap between reference and predictions."
-def _norm(t: str) -> str:
-    s = str(t)
-    try:
-        return normalize_template_strict(s)  
-    except NameError:
-        return correct_once(s)               
-y_true = merged["template"].map(_norm)
-y_pred = merged["pred_template"].map(_norm)
--
-exact_acc = (y_true == y_pred).mean()
-def _sim(a, b):
-    return SequenceMatcher(None, a, b).ratio()
-fuzzy_scores = [ _sim(a, b) for a, b in zip(y_true, y_pred) ]
-fuzzy_avg = sum(fuzzy_scores) / len(fuzzy_scores) if len(fuzzy_scores) else 0.0
-TAG_RE = re.compile(r'<[A-Z]+>')
-def tags(seq: str):
-    return TAG_RE.findall(seq or "")
-tp = fp = fn = 0
-for t_tags, p_tags in zip(y_true.map(tags), y_pred.map(tags)):
-    tc, pc = {}, {}
-    for x in t_tags: tc[x] = tc.get(x, 0) + 1
-    for x in p_tags: pc[x] = pc.get(x, 0) + 1
-    all_tags = set(tc) | set(pc)
-    for tag in all_tags:
-        ct, cp = tc.get(tag, 0), pc.get(tag, 0)
-        tp += min(ct, cp)
-        fp += max(0, cp - ct)
-        fn += max(0, ct - cp)
-prec = tp / (tp + fp) if (tp + fp) else 0.0
-rec  = tp / (tp + fn) if (tp + fn) else 0.0
-f1   = 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
-metrics_csv = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_metrics.csv")
-pd.DataFrame([{
-    "dataset": TARGET_DATASET,
-    "n_samples": len(merged),
-    "exact_accuracy": exact_acc,
-    "fuzzy_similarity": fuzzy_avg,
-    "tag_precision": prec,
-    "tag_recall": rec,
-    "tag_f1": f1
-}]).to_csv(metrics_csv, index=False, encoding="utf-8")
-fig, ax = plt.subplots(figsize=(6, 4))
-labels = ["Exact Acc", "Fuzzy Sim", "Tag P", "Tag R", "Tag F1"]
-values = [exact_acc, fuzzy_avg, prec, rec, f1]
-ax.bar(labels, values)
-ax.set_ylim(0, 1.0)
-ax.set_ylabel("Score (0–1)")
-ax.set_title(f"Parsing Metrics — {TARGET_DATASET}  (n={len(merged)})")
-for i, v in enumerate(values):
-    ax.text(i, v + 0.02, f"{v*100:.1f}%", ha="center", va="bottom")
-plt.tight_layout()
-png_path = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_metrics.png")
-plt.savefig(png_path, dpi=200, bbox_inches="tight")
-plt.show()
-print("Saved metrics CSV:", metrics_csv)
-print("Saved metrics PNG:", png_path)
-import matplotlib.pyplot as plt
-import os
+
+BATCH = 32
+
+def _extract_generated_text(obj):
+    
+    if isinstance(obj, dict) and "generated_text" in obj:
+        return obj["generated_text"]
+    if isinstance(obj, list) and obj and isinstance(obj[0], dict) and "generated_text" in obj[0]:
+        return obj[0]["generated_text"]
+    # Fallback: stringify
+    return str(obj)
+
+def infer_templates(msgs):
+    outs = gen(list(msgs))
+    return [_extract_generated_text(o).strip() for o in outs]
+
+rows = []
+for start in tqdm(range(0, len(raw_df), BATCH), desc="Generating templates"):
+    batch = raw_df.iloc[start:start+BATCH]
+    preds = infer_templates(batch["message"])
+    for pred, (_, r) in zip(preds, batch.iterrows()):
+        rows.append({
+            "timestamp": r.get("timestamp", None),
+            "level": r.get("level", None),
+            "source": r.get("component", "") or TARGET_DATASET,
+            "template_id": None,          
+            "template": pred,
+            "vars": {},
+            "fuzzy_score": None,          
+            "raw": r.get("message", "")
+        })
+
+parsed_df  = pd.DataFrame(rows)
+parsed_csv  = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_parsed_t5.csv")
+parsed_json = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_parsed_t5.jsonl")
+
 os.makedirs(RESULTS_OUT, exist_ok=True)
-save_path = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_fuzzy_distribution.png")
+parsed_df.to_csv(parsed_csv, index=False, encoding="utf-8")
+with open(parsed_json, "w", encoding="utf-8", newline="\n") as f:
+    for rec in rows:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+print("Wrote:", parsed_csv)
+print("Wrote:", parsed_json)
+
+
+
+
+# ### Cell 17 AdaParser (self-learning) integration with safe fallback
+
+# In[28]:
+
+
+import os, json, pandas as pd, hashlib
+
+parsed_csv  = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_parsed_t5.csv")
+assert os.path.exists(parsed_csv), "Run Cell 16 first."
+df = pd.read_csv(parsed_csv).fillna("")
+
+adaparser_state = os.path.join(FINAL_MODEL_DIR, "adaparser_state.bin")
+templates_csv   = os.path.join(FINAL_MODEL_DIR, "templates.csv")
+
+
+try:
+    from lilac import AdaParser, ParserConfig  
+    cfg = ParserConfig(model="t5-small", device=DEVICE)
+    ada = AdaParser(cfg)
+
+   
+    ada.update(df["template"].tolist())
+
+  
+    group_ids, scores = ada.assign(df["template"].tolist())
+    df["template_id"] = group_ids
+    df["fuzzy_score"] = scores
+
+  
+    ada.save(adaparser_state)
+    pd.DataFrame({"template_id": group_ids, "template": df["template"]}).drop_duplicates().to_csv(templates_csv, index=False)
+    print("AdaParser integrated and saved.")
+except Exception as e:
+    print("AdaParser not available or API mismatch; using fallback grouping.", e)
+ 
+    def tid(s): return "T" + hashlib.md5(s.encode("utf-8")).hexdigest()[:8]
+    df["template_id"] = df["template"].apply(tid)
+    df["fuzzy_score"] = 1.0
+    pd.DataFrame({"template_id": df["template_id"], "template": df["template"]}).drop_duplicates().to_csv(templates_csv, index=False)
+ 
+    with open(adaparser_state, "wb") as f: f.write(b"fallback")
+
+
+parsed_with_ids_csv  = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_parsed_final.csv")
+parsed_with_ids_json = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_parsed_final.jsonl")
+df.to_csv(parsed_with_ids_csv, index=False, encoding="utf-8")
+with open(parsed_with_ids_json, "w", encoding="utf-8", newline="\n") as f:
+    for rec in df.to_dict(orient="records"):
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+print("Wrote:", parsed_with_ids_csv)
+print("Wrote:", parsed_with_ids_json)
+
+
+# ### Cell 18 Add minimal LILAC config and finalize
+
+# In[29]:
+
+
+import os, json
+
+lilac_state = {
+    "tags": ["<IP>","<NUM>","<UUID>","<PATH>","<HEX>","<DATE>","<TIME>","<MS>","<HOST>"],
+    "normalizers": ["mask UUID", "mask IPv4", "mask NUM >=3 digits", "mask PATH", "mask HEX"],
+    "notes": "LILAC-style deterministic normalization applied upstream."
+}
+with open(os.path.join(FINAL_MODEL_DIR, "lilac_state.json"), "w", encoding="utf-8") as f:
+    json.dump(lilac_state, f, indent=2)
+
+
+print("Final model folder contains:")
+for root, _, files in os.walk(FINAL_MODEL_DIR):
+    for name in files:
+        print("-", os.path.relpath(os.path.join(root, name), FINAL_MODEL_DIR))
+
+
+# ### Cell 19 stopped at 18 
+
+# In[3]:
+
+
+import sys, subprocess
+def pipi(pkgs): subprocess.check_call([sys.executable, "-m", "pip", "install", *pkgs])
+try:
+    import rapidfuzz  
+except Exception:
+    pipi(["rapidfuzz==3.10.0"])
+
+
+# In[ ]:
+
+
+import os, glob, json, pandas as pd
+from transformers import pipeline
+from tqdm import tqdm
+
+gen = pipeline(
+    "text2text-generation",
+    model=os.path.join(FINAL_MODEL_DIR, "hf_model"),
+    tokenizer=os.path.join(FINAL_MODEL_DIR, "tokenizer"),
+    device=DEVICE,
+    do_sample=False,
+    num_beams=1,         
+    max_new_tokens=64,
+)
+
+def _extract_generated_text(obj):
+    if isinstance(obj, dict) and "generated_text" in obj:
+        return obj["generated_text"]
+    if isinstance(obj, list) and obj and isinstance(obj[0], dict) and "generated_text" in obj[0]:
+        return obj[0]["generated_text"]
+    return str(obj)
+
+def infer_batch(msgs):
+    outs = gen(list(msgs))
+    return [_extract_generated_text(o).strip() for o in outs]
+
+BATCH = 32  
+
+all_parsed_paths = []
+csv_files = sorted(glob.glob(os.path.join(PROCESSED_OUT, "*.csv")))
+for csv_in in csv_files:
+    ds_name = os.path.splitext(os.path.basename(csv_in))[0]
+    if ds_name == "ALL_combined":  # skip helper
+        continue
+    raw_df = pd.read_csv(csv_in, dtype=str).fillna("")
+    if "message" not in raw_df.columns:
+        print("Skip (no 'message' column):", ds_name)
+        continue
+
+    rows = []
+    for start in tqdm(range(0, len(raw_df), BATCH), desc=f"Infer {ds_name}"):
+        batch = raw_df.iloc[start:start+BATCH]
+        preds = infer_batch(batch["message"])
+        for pred, (_, r) in zip(preds, batch.iterrows()):
+            rows.append({
+                "dataset": ds_name,
+                "timestamp": r.get("timestamp"),
+                "level": r.get("level"),
+                "source": r.get("component") or ds_name,
+                "template": pred,
+                "raw": r.get("message")
+            })
+    out_csv  = os.path.join(RESULTS_OUT, f"{ds_name}_parsed_t5.csv")
+    out_json = os.path.join(RESULTS_OUT, f"{ds_name}_parsed_t5.jsonl")
+
+    pd.DataFrame(rows).to_csv(out_csv, index=False, encoding="utf-8")
+    with open(out_json, "w", encoding="utf-8", newline="\n") as f:
+        for rec in rows:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+    all_parsed_paths.append(out_csv)
+    print("Wrote:", out_csv)
+
+
+# ## Graphs
+
+# In[30]:
+
+
+import os, pandas as pd, numpy as np, difflib
+from pathlib import Path
+
+
+labels_regex = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels.csv")
+labels_llm   = os.path.join(LABELS_OUT, f"{TARGET_DATASET}_labels_llm.csv")  
+pred_csv     = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_parsed_final.csv")  
+
+labels_path = labels_llm if os.path.exists(labels_llm) else labels_regex
+assert os.path.exists(labels_path), f"Missing labels file at {labels_path}"
+assert os.path.exists(pred_csv), f"Missing predictions file at {pred_csv}"
+
+gold = pd.read_csv(labels_path, dtype=str).fillna("")
+pred = pd.read_csv(pred_csv, dtype=str).fillna("")
+
+
+join_key_gold = "message"
+join_key_pred = "raw" if "raw" in pred.columns else "message"
+
+df_eval = gold.merge(
+    pred.rename(columns={join_key_pred: "message", "template":"pred_template"}),
+    on="message",
+    how="inner",
+    suffixes=("_gold", "_pred")
+)
+
+
+cols = ["message", "template", "pred_template", "level", "component", "template_id", "fuzzy_score"]
+df_eval = df_eval.reindex(columns=[c for c in cols if c in df_eval.columns])
+
+print("Joined rows:", len(df_eval), "/", len(gold), "(dropped:", len(gold)-len(df_eval), ")")
+df_eval.head(3)
+
+# helpers
+def exact_match(a: str, b: str) -> bool:
+    return (a or "").strip() == (b or "").strip()
+
+def norm_edit_sim(a: str, b: str) -> float:
+    """Normalized similarity via difflib SequenceMatcher (0..1)"""
+    return difflib.SequenceMatcher(None, (a or ""), (b or "")).ratio()
+
+
+try:
+    from rapidfuzz.distance import Levenshtein
+    def norm_edit_sim(a: str, b: str) -> float:
+        a = (a or ""); b = (b or "")
+        if not a and not b: return 1.0
+        return 1 - (Levenshtein.distance(a, b) / max(len(a), len(b)))
+except Exception:
+    pass
+
+
+# ### Cell 20
+
+# In[31]:
+
+
+import matplotlib.pyplot as plt
+
+assert "template" in df_eval.columns and "pred_template" in df_eval.columns, "Missing required columns."
+
+
+df_eval["exact"] = (df_eval["template"].str.strip() == df_eval["pred_template"].str.strip()).astype(int)
+df_eval["sim"]   = [norm_edit_sim(g, p) for g, p in zip(df_eval["template"], df_eval["pred_template"])]
+
+acc = df_eval["exact"].mean() if len(df_eval) else 0.0
+sim_mean = df_eval["sim"].mean() if len(df_eval) else 0.0
+sim_med  = df_eval["sim"].median() if len(df_eval) else 0.0
+
+print(f"Exact match accuracy: {acc*100:.2f}%")
+print(f"Avg similarity (edit-ratio): {sim_mean:.3f}  |  median: {sim_med:.3f}")
+
+if "fuzzy_score" in df_eval.columns:
+    try:
+        df_eval["fuzzy_score"] = pd.to_numeric(df_eval["fuzzy_score"], errors="coerce")
+    except: pass
+    print("AdaParser fuzzy_score present. Mean:", np.nanmean(df_eval["fuzzy_score"].values))
+
+
 plt.figure(figsize=(6,4))
-plt.hist(fuzzy_scores, bins=30, color="skyblue", edgecolor="black")
-plt.title(f"Distribution of Fuzzy Similarity — {TARGET_DATASET}")
-plt.xlabel("Similarity Score (0–1)")
-plt.ylabel("Number of Lines")
-plt.grid(alpha=0.3)
+plt.hist(df_eval["sim"], bins=30)
+plt.title("Template Similarity (gold vs. predicted)")
+plt.xlabel("Edit similarity (0..1)")
+plt.ylabel("Count")
 plt.tight_layout()
-plt.savefig(save_path, dpi=300)
 plt.show()
-print(f"✅ Saved fuzzy similarity distribution to: {save_path}")
+
+
+if "template_id" in df_eval.columns:
+    top_pred = df_eval["template_id"].value_counts().head(15)
+    plt.figure(figsize=(8,4))
+    plt.bar(top_pred.index.astype(str), top_pred.values)
+    plt.xticks(rotation=60, ha="right")
+    plt.title("Top Predicted Template IDs (count)")
+    plt.tight_layout()
+    plt.show()
+
+
+if "level" in df_eval.columns:
+    by_lvl = df_eval.groupby("level")["exact"].mean().sort_values(ascending=False)
+    plt.figure(figsize=(6,4))
+    plt.bar(by_lvl.index.astype(str), (by_lvl.values*100.0))
+    plt.title("Exact Match Accuracy by Log Level")
+    plt.ylabel("Accuracy (%)")
+    plt.tight_layout()
+    plt.show()
+
+
+# ### Cell 21
+
+# In[32]:
+
+
+from IPython.display import display, HTML
+
+
+N = 20
+worst = df_eval.sort_values("sim", ascending=True).head(N).copy()
+
+
+cols_show = ["message", "template", "pred_template"]
+if "level" in worst.columns: cols_show.insert(1, "level")
+if "component" in worst.columns: cols_show.insert(1, "component")
+display(worst[cols_show])
+
+
+def html_diff(a, b):
+    a = (a or ""); b = (b or "")
+    a, b = a.replace("&","&amp;"), b.replace("&","&amp;")
+    differ = difflib.HtmlDiff(wrapcolumn=80)
+    return differ.make_table(a.split(), b.split(), fromdesc="gold", todesc="pred", context=True, numlines=1)
+
+html_rows = []
+for _, row in worst.head(5).iterrows():
+    html_rows.append("<h4>Message</h4><pre style='white-space:pre-wrap'>" + row['message'] + "</pre>")
+    html_rows.append(html_diff(row["template"], row["pred_template"]))
+report_html = "<html><body>" + "\n".join(html_rows) + "</body></html>"
+
+report_path = os.path.join(RESULTS_OUT, f"{TARGET_DATASET}_eval_report.html")
+with open(report_path, "w", encoding="utf-8") as f:
+    f.write(report_html)
+
+print("Wrote HTML diff report:", report_path)
+display(HTML(report_html))
+
+
+# ### Cell 22
+
+# In[33]:
+
+
+pairs = (
+    df_eval.loc[df_eval["template"] != df_eval["pred_template"], ["template","pred_template"]]
+    .value_counts()
+    .reset_index(name="count")
+)
+print("Top confusions:")
+display(pairs.head(20))
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+

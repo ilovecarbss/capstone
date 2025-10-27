@@ -1,0 +1,9 @@
+{
+  "model_version": "v1.0",
+  "trained_at": "2025-10-26T20:38:36Z",
+  "target_dataset": "OpenSSH_2k",
+  "hf_model": "t5-small",
+  "save_dir": "C:\\Users\\harik\\KS\\Models\\OpenSSH_2k_t5_small",
+  "device": "cuda",
+  "notes": "T5 seq2seq fine-tuned on full dataset (message->template)."
+}
