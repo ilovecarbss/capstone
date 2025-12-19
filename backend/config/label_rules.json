@@ -1,0 +1,297 @@
+[
+  {
+    "id": "power_save_any_nodes",
+    "description": "Any POWER: Power save mode: <N> nodes line",
+    "match_any": [
+      {
+        "field": "raw",
+        "contains": "POWER: Power save mode:"
+      }
+    ],
+    "set": {
+      "final_label": "cluster_power_save_mode",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "power,save,cluster"
+    }
+  },
+
+  {
+    "id": "power_from_t5_template",
+    "description": "Use T5 template to detect cluster power save mode",
+    "match_any": [
+      {
+        "field": "t5_template",
+        "contains": "cluster_power_save_mode"
+      }
+    ],
+    "set": {
+      "final_label": "cluster_power_save_mode",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "power,save,cluster"
+    }
+  },
+
+  {
+    "id": "gpu_inventory",
+    "description": "GPU Gres inventory / allocation updates",
+    "match_any": [
+      { "field": "raw", "contains": "Gres Name=gpu" },
+      { "field": "raw", "contains": "Gres Name=gpu Type" }
+    ],
+    "set": {
+      "final_label": "gpu_inventory_update",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "gpu,l4,inventory"
+    }
+  },
+
+  {
+    "id": "power_no_more_nodes",
+    "description": "POWER: no more nodes to resume for job",
+    "match_any": [
+      { "field": "raw", "contains": "POWER: no more nodes to resume for job" }
+    ],
+    "set": {
+      "final_label": "cluster_power_save_complete",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "power,save,complete"
+    }
+  },
+
+  {
+    "id": "power_waking_nodes",
+    "description": "POWER: power_save waking nodes",
+    "match_any": [
+      { "field": "raw", "contains": "power_save: waking nodes" }
+    ],
+    "set": {
+      "final_label": "cluster_power_save_wake",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "power,save,wakeup"
+    }
+  },
+
+  {
+    "id": "power_node_powered_up",
+    "description": "POWER: node powered up with instance id",
+    "match_any": [
+      { "field": "raw", "contains": "POWER: Node" },
+      { "field": "raw", "contains": "powered up with instance_id" }
+    ],
+    "set": {
+      "final_label": "cluster_power_node_online",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "power,node,online"
+    }
+  },
+
+  {
+    "id": "scheduler_parameters",
+    "description": "SchedulerParameters config (preempt, bf_resolution, bf_window)",
+    "match_any": [
+      { "field": "raw", "contains": "SchedulerParameters=preempt_" },
+      { "field": "raw", "contains": "SchedulerParameters=bf_resolution" },
+      { "field": "raw", "contains": "SchedulerParameters=bf_window" }
+    ],
+    "set": {
+      "final_label": "scheduler_parameters",
+      "severity": "info",
+      "owner_team": "scheduler",
+      "tags": "scheduler,config"
+    }
+  },
+
+  {
+    "id": "cluster_state_recovered",
+    "description": "Cluster state / reservations / triggers recovered",
+    "match_any": [
+      { "field": "raw", "contains": "State of 0 reservations" },
+      { "field": "raw", "contains": "State of 0 triggers recovered" },
+      { "field": "raw", "contains": "recovered state of 0 reservations" }
+    ],
+    "set": {
+      "final_label": "cluster_state_recovered_no_reservations",
+      "severity": "info",
+      "owner_team": "scheduler",
+      "tags": "cluster,state,recovered,no_reservations"
+    }
+  },
+
+  {
+    "id": "controller_primary",
+    "description": "Running as primary controller",
+    "match_any": [
+      { "field": "raw", "contains": "Running as primary controller" }
+    ],
+    "set": {
+      "final_label": "controller_primary",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "controller,primary"
+    }
+  },
+
+  {
+    "id": "controller_backup_not_configured",
+    "description": "read_slurm_conf: backup_controller not specified",
+    "match_any": [
+      { "field": "raw", "contains": "backup_controller not specified" }
+    ],
+    "set": {
+      "final_label": "controller_backup_not_configured",
+      "severity": "warning",
+      "owner_team": "infra",
+      "tags": "controller,backup,not_configured"
+    }
+  },
+
+  {
+    "id": "auth_failure",
+    "description": "Authentication failures",
+    "match_any": [
+      { "field": "raw", "contains": "AUTH:" },
+      { "field": "raw", "contains": "failed password" },
+      { "field": "raw", "contains": "authentication failure" }
+    ],
+    "set": {
+      "final_label": "auth_failure",
+      "severity": "high",
+      "owner_team": "security",
+      "tags": "auth,security,login_failure"
+    }
+  },
+
+  {
+    "id": "disk_usage_high",
+    "description": "/var high usage",
+    "match_any": [
+      { "field": "raw", "contains": "/var is" },
+      { "field": "raw", "contains": "% full on node" }
+    ],
+    "set": {
+      "final_label": "disk_usage_high",
+      "severity": "warning",
+      "owner_team": "storage",
+      "tags": "disk,usage,high"
+    }
+  },
+
+  {
+    "id": "disk_scrubber_error",
+    "description": "Disk scrubber errors",
+    "match_any": [
+      { "field": "raw", "contains": "DISK:" },
+      { "field": "raw", "contains": "scrubber error" }
+    ],
+    "set": {
+      "final_label": "disk_scrubber_error",
+      "severity": "high",
+      "owner_team": "storage",
+      "tags": "disk,scrubber,error"
+    }
+  },
+
+  {
+    "id": "job_time_limit_config",
+    "description": "job_time_limit configuration complete",
+    "match_any": [
+      { "field": "raw", "contains": "job_time_limit" },
+      { "field": "raw", "contains": "Configuration for JobId" }
+    ],
+    "set": {
+      "final_label": "job_time_limit_configured",
+      "severity": "info",
+      "owner_team": "scheduler",
+      "tags": "job,time_limit,config"
+    }
+  },
+
+  {
+    "id": "network_latency_storage",
+    "description": "Network latency to storage cluster increased",
+    "match_any": [
+      { "field": "raw", "contains": "NETWORK:" },
+      { "field": "raw", "contains": "latency to storage cluster" }
+    ],
+    "set": {
+      "final_label": "network_latency_storage_cluster",
+      "severity": "warning",
+      "owner_team": "network",
+      "tags": "network,latency,storage"
+    }
+  },
+
+  {
+    "id": "rule_job_submit_batch",
+    "description": "Slurm batch job submission",
+    "match_any": [
+      {
+        "field": "raw",
+        "contains": "_slurm_rpc_submit_batch_job"
+      }
+    ],
+    "set": {
+      "final_label": "job_submit_batch",
+      "severity": "info",
+      "owner_team": "scheduler",
+      "tags": "job,submit,batch"
+    }
+  },
+
+  {
+    "id": "rule_sched_allocate",
+    "description": "Scheduler allocates nodes for a job",
+    "match_any": [
+      {
+        "field": "raw",
+        "contains": "sched: Allocate JobId="
+      }
+    ],
+    "set": {
+      "final_label": "job_allocate",
+      "severity": "info",
+      "owner_team": "scheduler",
+      "tags": "job,allocate,node,cpu-8c-std"
+    }
+  },
+
+  {
+    "id": "rule_node_now_responding",
+    "description": "Node is back online / responding",
+    "match_any": [
+      {
+        "field": "raw",
+        "contains": " now responding"
+      }
+    ],
+    "set": {
+      "final_label": "node_now_responding",
+      "severity": "info",
+      "owner_team": "infra",
+      "tags": "node,recovered,online"
+    }
+  },
+
+  {
+    "id": "rule_job_reset_start_time",
+    "description": "Resetting job start time for node power up",
+    "match_any": [
+      {
+        "field": "raw",
+        "contains": "Resetting JobId="
+      }
+    ],
+    "set": {
+      "final_label": "job_reset_start_time",
+      "severity": "info",
+      "owner_team": "scheduler",
+      "tags": "job,reset_start_time,node_power_up"
+    }
+  }
+]

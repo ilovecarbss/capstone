@@ -1,0 +1,102 @@
+{
+  "gpu_inventory_update": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "gpu,l4,inventory,infra"
+  },
+  "scheduler_config_event": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "scheduler,config,select,prepare"
+  },
+  "cluster_state_recovered_no_reservations": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "cluster,state,reservations,recovered"
+  },
+  "cluster_state_recovered_no_triggers": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "cluster,state,triggers,recovered"
+  },
+  "controller_backup_not_configured": {
+    "severity": "warning",
+    "owner_team": "infra",
+    "tags": "controller,backup,not_configured"
+  },
+  "controller_primary": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "controller,primary,infra"
+  },
+  "scheduler_parameters": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "scheduler,config,preempt"
+  },
+  "cluster_power_save_mode": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "power,save,cluster,infra"
+  },
+  "cluster_power_save_complete": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "power,save,complete"
+  },
+  "cluster_power_save_wake": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "power,save,wakeup"
+  },
+  "cluster_power_node_online": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "power,node,online"
+  },
+  "job_time_limit_configured": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "job,time_limit,config"
+  },
+  "auth_failure": {
+    "severity": "high",
+    "owner_team": "security",
+    "tags": "auth,security,login_failure"
+  },
+  "disk_usage_high": {
+    "severity": "warning",
+    "owner_team": "storage",
+    "tags": "disk,usage,high"
+  },
+  "network_latency_storage_cluster": {
+    "severity": "warning",
+    "owner_team": "network",
+    "tags": "network,latency,storage"
+  },
+  "job_submit_batch": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "job,submit,batch"
+  },
+  "job_allocate": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "job,allocate,node,cpu-8c-std"
+  },
+  "node_now_responding": {
+    "severity": "info",
+    "owner_team": "infra",
+    "tags": "node,recovered,online"
+  },
+  "disk_scrubber_error": {
+    "severity": "high",
+    "owner_team": "storage",
+    "tags": "disk,scrubber,error"
+  },
+  "job_reset_start_time": {
+    "severity": "info",
+    "owner_team": "scheduler",
+    "tags": "job,reset_start_time,node_power_up"
+  }
+}

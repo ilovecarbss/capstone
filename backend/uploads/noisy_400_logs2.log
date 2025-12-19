@@ -1,0 +1,26 @@
+[2025-09-03T02:09:33.0000] POWER: no more nodes to resume for job JobId=986
+[2025-09-03T15:09:31.0000] NETWORK: latency to storage cluster exceeded threshold
+[2025-09-03T15:00:57.0000] SchedulerParameters=preempt_youngest_first,bf_resolution=60,bf_window=4320
+[2025-09-03T11:46:13.0000] _slurm_rpc_submit_batch_job: JobId=973 InitPrio=30459 usec=6689
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-1
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-2 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-2
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-3 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-3
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-4 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-4
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-5 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-5
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-6 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-6
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-7 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-7
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-8 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-8
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-9 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-9
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-10 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-10
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-11 reason set to: stopping cluster
+[2025-08-27T09:41:14.053] power down request repeating for node cpu-16c-std-dy-c7i8xlarge-11
+[2025-08-27T09:41:14.053] update_node: node cpu-16c-std-dy-c7i8xlarge-12 reason set to: stopping cluster

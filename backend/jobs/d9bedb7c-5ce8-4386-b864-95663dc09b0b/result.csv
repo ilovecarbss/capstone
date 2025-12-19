@@ -1,0 +1,26 @@
+timestamp,raw,final_label,severity,owner_team,tags,cluster_id,t5_template,cluster_template,drain_similarity,auto_label,auto_label_v2
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.220] Gres Name=gpu Type=l4 Count=1 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.221] Gres Name=gpu Type=l4 Count=1 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.222] Gres Name=gpu Type=l4 Count=1 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.223] Gres Name=gpu Type=l4 Count=1 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.224] Gres Name=gpu Type=l4 Count=1 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:54:51.273] POWER: Power save mode: 334 nodes,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T08:05:11.347] POWER: Power save mode: 334 nodes,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T08:15:31.423] POWER: Power save mode: 334 nodes,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T08:25:51.498] POWER: Power save mode: 334 nodes,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:53:16.000] SchedulerParameters=preempt_youngest_first,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:53:16.001] SchedulerParameters=bf_resolution=60,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:53:16.002] SchedulerParameters=bf_window=4320,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.244] select/cons_tres: preparing for 19 partitions,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.244] select/cons_tres: reconfigure,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.244] Recovered state of 0 reservations,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.244] State of 0 triggers recovered,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.226] Running as primary controller,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.245] read_slurm_conf: backup_controller not specified,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.236] Gres Name=gpu Type=l4 Count=4 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T07:52:15.235] Gres Name=gpu Type=l4 Count=8 Flags=HAS_FILE,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T09:10:00.001] AUTH: user alice failed password authentication from 10.1.2.3 (error=INVALID_CREDENTIALS),unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T09:10:05.123] DISK: /var is 92% full on node cpu-16c-std-01 (warning: low free space),unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T09:10:07.456] DISK: scrubber error while cleaning temp files on node cpu-8c-std-02,unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T09:10:10.789] JOB 987654 submitted by user bob to partition gpu-long (priority=high),unknown,info,unknown,,-1,,,0.0,unknown,unknown
+2025-12-08T17:36:54.203430,[2025-09-03T09:10:12.000] NETWORK: latency to storage cluster increased to 120ms (no SLA breach),unknown,info,unknown,,-1,,,0.0,unknown,unknown
