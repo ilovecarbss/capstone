@@ -25,7 +25,7 @@ The pipeline consists of four main components:
 ## 1. Training Process
 
 ### Dataset
-The system is trained and evaluated using LogHub-style system logs, including:
+The system is trained and evaluated using LogHub logs, which including:
 - Apache
 - BGL
 - HDFS
