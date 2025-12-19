@@ -133,7 +133,6 @@ This design ensures clean separation between **model logic** and **API logic**.
 The system exposes functionality via a **FastAPI-based backend**.
 
 ### Core Features
-- Upload log files via HTTP
 - Process logs using the combined model
 - Return structured CSV / JSON outputs
 - Support integration with visualization tools such as Grafana
