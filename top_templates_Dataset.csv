@@ -1,0 +1,21 @@
+template,count
+"<NUM>-07-29 19:22:26,<NUM> - INFO  [<PATH>:<NUM>:QuorumCnxManager$Listener@<NUM>] - Received connection request <PATH>:<NUM>",4
+"<NUM>-07-29 19:33:21,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Interrupted while waiting for message on queue",4
+"<NUM>-07-29 19:23:42,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Send worker leaving thread",3
+"<NUM>-07-29 19:29:04,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Send worker leaving thread",3
+"<NUM>-07-29 19:27:53,<NUM> - INFO  [<PATH>:<NUM>:QuorumCnxManager$Listener@<NUM>] - Received connection request <PATH>:<NUM>",3
+"<NUM>-07-29 19:34:05,<NUM> - INFO  [<PATH>:<NUM>:QuorumCnxManager$Listener@<NUM>] - Received connection request <PATH>:<NUM>",3
+"<NUM>-07-29 19:26:51,<NUM> - INFO  [<PATH>:<NUM>:QuorumCnxManager$Listener@<NUM>] - Received connection request <PATH>:<NUM>",3
+"<NUM>-07-29 19:25:15,<NUM> - WARN  [RecvWorker:<HEX>:QuorumCnxManager$RecvWorker@<NUM>] - Interrupting SendWorker",3
+"<NUM>-07-29 19:24:16,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Send worker leaving thread",3
+"<NUM>-07-29 19:36:16,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Interrupted while waiting for message on queue",3
+"<NUM>-07-29 19:35:52,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Interrupted while waiting for message on queue",3
+"<NUM>-07-29 19:35:14,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Send worker leaving thread",3
+"<NUM>-07-29 19:30:38,<NUM> - INFO  [<PATH>:<NUM>:QuorumCnxManager$Listener@<NUM>] - Received connection request <PATH>:<NUM>",3
+"<NUM>-07-29 19:27:11,<NUM> - WARN  [SendWorker:<HEX>:QuorumCnxManager$SendWorker@<NUM>] - Interrupted while waiting for message on queue",3
+"<NUM>-07-29 19:33:55,<NUM> - WARN  [RecvWorker:<HEX>:QuorumCnxManager$RecvWorker@<NUM>] - Interrupting SendWorker",3
+"<NUM>-07-29 19:30:25,<NUM> - WARN  [RecvWorker:<HEX>:QuorumCnxManager$RecvWorker@<NUM>] - Interrupting SendWorker",3
+"<NUM>-07-29 23:52:09,<NUM> - INFO  [NIOServerCxn.Factory:<IP><PATH>:<NUM>:NIOServerCnxnFactory@<NUM>] - Accepted socket connection from <PATH>:<NUM>",3
+"<NUM>-07-29 19:34:05,<NUM> - WARN  [RecvWorker:<HEX>:QuorumCnxManager$RecvWorker@<NUM>] - Connection broken for id <HEX>, my id = 1, error =",3
+"<NUM>-07-31 11:09:02,<NUM> - WARN  [NIOServerCxn.Factory:<IP><PATH>:<NUM>:ZooKeeperServer@<NUM>] - Connection request from old client <PATH>:<NUM>; will be dropped if server is in r-o mode",3
+"<NUM>-08-20 17:14:24,<NUM> - INFO  [SessionTracker:ZooKeeperServer@<NUM>] - Expiring session <HEX>, timeout of <NUM>0ms exceeded",3
